@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Déployer sur le VPS
+      id: pull-and-deploy
       env:
           DOTNET_ENVIRONMENT: Production
       run: |
