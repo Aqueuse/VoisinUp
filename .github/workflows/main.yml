@@ -22,4 +22,14 @@ jobs:
           port: 22
           script: |
             cd /home/ubuntu/VoisinUp
-            git pull
+
+            # Pull the latest image
+            sudo docker pull aqueuse/voisinup:latest
+
+            # Stop and remove the old container
+            sudo docker stop voisinup || true
+            sudo docker rm voisinup || true
+
+            # Run a new container with the latest image
+            sudo docker run -d -p 80:80 aqueuse/voisinup:latest
+            
