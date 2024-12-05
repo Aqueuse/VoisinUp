@@ -9,15 +9,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    
-    - name: Déployer sur le VPS
-      env:
-          DOTNET_ENVIRONMENT: Production
-      run: |
-        ssh ubuntu@44.201.133.27 "
-        cd /home/ubuntu/VoisinUp/ && 
-        git pull && 
-        dotnet build &&
-        dotnet publish -c Release"
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/VoisinUp
+            git pull
