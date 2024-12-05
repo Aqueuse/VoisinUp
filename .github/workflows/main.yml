@@ -1,9 +1,12 @@
-name: Déploiement continu
+name: Déploiement manuel
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environnement de déploiement'
+        required: true
+        default: 'DEPLOY'
 
 jobs:
   deploy:
