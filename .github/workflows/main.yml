@@ -17,5 +17,5 @@ steps:
   key: ${{ secrets.PRIVATE_KEY }}
   port: 22
   script: |
-  cd /home/ubuntu/VoisinUp
-  git pull
+    cd /home/ubuntu/VoisinUp
+    git pull
