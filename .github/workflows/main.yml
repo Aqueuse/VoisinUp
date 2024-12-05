@@ -9,6 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name : check secrets
+        run : echo ${{ secrets.HOST }}
+
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
         with:
