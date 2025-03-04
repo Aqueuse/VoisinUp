@@ -1,23 +1,21 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["VoisinUp.csproj", "./"]
-RUN dotnet restore "VoisinUp.csproj"
+# Définition du répertoire de travail à l'intérieur du conteneur
+WORKDIR /app
+
+# Copier uniquement les fichiers du projet nécessaires pour restaurer les dépendances
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copier tous les fichiers et publier
 COPY . .
-WORKDIR "/src/"
-RUN dotnet build "VoisinUp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet publish -c Release -o /app/out
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "VoisinUp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+# Image runtime à partir de l'aspnet de base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/out .
+
+# Exposer le port et démarrer l'appli
+EXPOSE 80
 ENTRYPOINT ["dotnet", "VoisinUp.dll"]
