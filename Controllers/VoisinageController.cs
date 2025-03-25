@@ -11,11 +11,9 @@ public class VoisinageController : Controller {
     }
 
     [HttpGet("{voisinageId}")]
-    public async Task<IActionResult> GetVoisinage(int voisinageId) {
-        var voisinage = await _voisinageService.GetVoisinageByIdAsync(voisinageId);
+    public async Task<IActionResult> GetVoisins(int voisinageId) {
+        var voisins = await _voisinageService.GetVoisinsByIdAsync(voisinageId);
         
-        if (voisinage == null) return NotFound();
-        
-        return Ok(voisinage);
+        return Ok(voisins);
     }
 }

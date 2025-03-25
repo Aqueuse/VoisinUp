@@ -1,65 +1,66 @@
-﻿using Npgsql;
-using RepoDb;
-using VoisinUp.Configuration;
-using VoisinUp.Models;
+﻿using VoisinUp.Models;
+using VoisinUp.Repositories;
 
 namespace VoisinUp.Services;
 
 public class UserService {
-    private string _connectionString;
+    private readonly UserRepository _userRepository;
+    private readonly VoisinageRepository _voisinageRepository;
+    private readonly AuthentificationService _authentificationService;
 
-    public UserService(DbConfig dbConfig) {
-        _connectionString = dbConfig.ConnectionString;
+    public UserService(UserRepository userRepository, AuthentificationService authentificationService, VoisinageRepository voisinageRepository) {
+        _userRepository = userRepository;
+        _voisinageRepository = voisinageRepository;
+        
+        _authentificationService = authentificationService;
     }
     
     // 🔹 Crée un utilisateur et sa grille 100x100x5
-    public async Task CreateUserAsync(string name, string email, string country, string commune, int voisinageId) {
-        var user = new User {
-            Name = name, 
-            Email = email,
-            Country = country,
-            Commune = commune,
-            VoisinageId = voisinageId
+    public async Task<ServiceResult> CreateUserAsync(CreateUser createUser) {
+        // check if voisinage exist
+        var voisinage = await _voisinageRepository.GetVoisinageByIdAsync(createUser.VoisinageId);
+        if (voisinage == null) {
+            return new ServiceResult { StatusCode = 404, Message = "voisinage non trouvé"};
+        }
+
+        // check if user with email don't already exist, if so, return a specific message to redirect user (vuejs)
+        var user = await _userRepository.GetUserByEmailAsync(createUser.Email);
+
+        if (user != null) {
+            return new ServiceResult { StatusCode = 409, Message = "un utilisateur avec ce mail existe déjà, connectez vous"};
+        }
+
+        // Hash du mot de passe avant stockage
+        string hashedPassword = _authentificationService.GetHashedPassword(createUser.PasswordHash);
+
+        var userToCreate = new User {
+            UserId = Guid.NewGuid().ToString(),
+            Name = createUser.Name,
+            Email = createUser.Email,
+            PasswordHash = hashedPassword,
+            Country = "",
+            Commune = "",
+            VoisinageId = createUser.VoisinageId
         };
-
-        await using var connection = new NpgsqlConnection(_connectionString);
         
-        var id = await connection.InsertAsync(user);
-
-        Console.WriteLine("user successfully created. UserId is "+id);
-
-        // // Générer la grille de 100x100x5
-        // var gridAssets = new List<GridAsset>();
-        // for (int x = 0; x < 100; x++) {
-        //     for (int y = 0; y < 100; y++) {
-        //         for (int z = 0; z < 5; z++) {
-        //             gridAssets.Add(new GridAsset {
-        //                 UserId = user.UserId,
-        //                 X = x,
-        //                 Y = y,
-        //                 Z = z,
-        //                 AssetId = null // Aucune asset de base
-        //             });
-        //         }
-        //     }
-        // }
+        await _userRepository.CreateUserAsync(userToCreate);
+        return new ServiceResult { StatusCode = 200, Message = "utilisateur créé"};
     }
 
-    // 🔹 query un utilisateur
-    public async Task<User?> GetUserByIdAsync(string userId) {
-        await using var _connection = new NpgsqlConnection(_connectionString);
+    public async Task<ServiceResult> AuthenticateUserAsync(string email, string password) {
+        var user = await _userRepository.GetUserByEmailAsync(email);
+        if (user == null) return new ServiceResult { StatusCode = 404, Message = "utilisateur non trouvé, inscrivez vous"};
+        
+        var isPasswordValid = _authentificationService.Verify(password, user.PasswordHash);
+        if (isPasswordValid) return new ServiceResult { StatusCode = 200, Data = user};
 
-        var user = await _connection.QueryAsync<User>(u => u.UserId == userId);
-
-        return user.FirstOrDefault();
+        // TODO : mecanique anti forcing à prévoir
+        return new ServiceResult { StatusCode = 401, Message = "mauvais mot de passe"};
     }
 
-    // 🔹 Supprime un utilisateur et sa grille
-    public async Task DeleteUserAsync(string userId) {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        
-        var deletedRows = connection.DeleteAsync<User>(a => a.UserId == userId);
+    public async Task<ServiceResult> DeleteUserAsync(string userId) {
+        await _userRepository.DeleteUserAsync(userId);
 
-        // TODO remove GRILLE
+        return new ServiceResult { StatusCode = 200, Message = "utilisateur supprimé" };
     }
 }

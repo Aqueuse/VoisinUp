@@ -1,22 +1,25 @@
-﻿using Npgsql;
-using RepoDb;
-using VoisinUp.Configuration;
-using VoisinUp.Models;
+﻿using VoisinUp.Models;
+using VoisinUp.Repositories;
 
 namespace VoisinUp.Services;
 
 public class VoisinageService {
-    private readonly string _connectionString;
-    
-    public VoisinageService(DbConfig dbConfig) {
-        _connectionString = dbConfig.ConnectionString;
+    private readonly VoisinageRepository _voisinageRepository;
+
+    public VoisinageService(VoisinageRepository voisinageRepository) {
+        _voisinageRepository = voisinageRepository;
     }
     
-    public async Task<Voisinage?> GetVoisinageByIdAsync(int voisinageId) {
-        await using var connection = new NpgsqlConnection(_connectionString);
+    public async Task<UserInfo[]> GetVoisinsByIdAsync(int voisinageId) {
+        var voisins = await _voisinageRepository.GetVoisinsByIdAsync(voisinageId);
+    
+        var voisinsInfo = voisins.Select(v => new UserInfo {
+            Name = v.Name,
+            AvatarUrl = v.AvatarUrl,
+            Bio = v.Bio
+        });
 
-        IEnumerable<Voisinage?> voisinages = await connection.QueryAsync<Voisinage>(q => q.VoisinageId == voisinageId);
-
-        return voisinages?.First();
+        return voisinsInfo.ToArray();
     }
+    
 }

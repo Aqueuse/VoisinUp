@@ -4,9 +4,6 @@ using VoisinUp.Services;
 
 namespace VoisinUp.Controllers;
 
-/// <summary>
-/// Gère la création et la suppression des utilisateurs et de leur grille.
-/// </summary>
 [ApiController]
 [Route("api/user")]
 public class UserController : Controller {
@@ -16,30 +13,17 @@ public class UserController : Controller {
         _userService = userService;
     }
 
-    /// <summary>
-    /// Crée un utilisateur et génère sa grille (100x100x5).
-    /// </summary>
-    /// <param name="user">Données de l'utilisateur.</param>
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] User user) {
-        await _userService.CreateUserAsync(
-            user.Name, 
-            user.Email, 
-            user.Country, 
-            user.Commune, 
-            user.VoisinageId
-        );
+    public async Task<IActionResult> CreateUser([FromBody] CreateUser createUser) {
+        var result = await _userService.CreateUserAsync(createUser);
         
-        return Ok(new { message = "Utilisateur et grille créés !" });
+        return StatusCode(result.StatusCode, result.Message);
     }
 
-    /// <summary>
-    /// Supprime un utilisateur et sa grille.
-    /// </summary>
-    /// <param name="userId">ID de l'utilisateur à supprimer.</param>
     [HttpDelete("{userId}")]
     public async Task<IActionResult> DeleteUser(string userId) {
-        await _userService.DeleteUserAsync(userId);
-        return Ok(new { message = "Utilisateur et grille supprimés !" });
+        var result = await _userService.DeleteUserAsync(userId);
+        
+        return StatusCode(result.StatusCode, result.Message);
     }
 }
