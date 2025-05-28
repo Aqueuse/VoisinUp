@@ -1,9 +1,12 @@
-name: Déploiement continu
+name: Déploiement manuel
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environnement de déploiement'
+        required: true
+        default: 'DEPLOY'
 
 jobs:
   deploy:
@@ -21,5 +24,13 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/VoisinUp
-            git pull
+            # Pull the latest image
+            sudo docker pull aqueuse/voisinup:latest
+
+            # Stop and remove the old container
+            sudo docker stop voisinup
+            sudo docker rm voisinup
+
+            # Run a new container with the latest image
+            sudo docker run -d --name voisinup -p 80:80 aqueuse/voisinup:latest
+            
