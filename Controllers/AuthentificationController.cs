@@ -25,6 +25,6 @@ public class AuthentificationController : Controller {
             return StatusCode(200, new { token });
         }
         
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
 }

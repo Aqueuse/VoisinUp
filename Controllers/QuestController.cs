@@ -9,7 +9,7 @@ namespace VoisinUp.Controllers;
 [ApiController]
 [Route("/api/quest")]
 public class QuestController : Controller {
-    private QuestService _questService;
+    private readonly QuestService _questService;
     
     public QuestController(QuestService questService) {
         _questService = questService;
@@ -23,7 +23,7 @@ public class QuestController : Controller {
         
         var result = await _questService.CreateQuest(createQuest, userIdClaim);
         
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
 
     [Authorize]
@@ -34,68 +34,70 @@ public class QuestController : Controller {
 
         var result = await _questService.DeleteQuest(questId, userIdClaim);
 
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
     
     [Authorize]
     [HttpPost("join")]
     public async Task<IActionResult> JoinQuest(string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
         if (userIdClaim == null) return Unauthorized();
 
         var result = await _questService.JoinQuest(questId, userIdClaim);
 
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
     
     [Authorize]
     [HttpDelete("leave")]
     public async Task<IActionResult> LeaveQuest(string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
         if (userIdClaim == null) return Unauthorized();
 
         var result = await _questService.LeaveQuest(questId, userIdClaim);
         
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
     
     [Authorize]
     [HttpPost("start")]
     public async Task<IActionResult> StartQuest([FromBody]UpdateQuest updateQuest) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
         if (userIdClaim == null) return Unauthorized();
 
         var result = await _questService.StartQuest(updateQuest.QuestId, userIdClaim);
 
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
     
     [Authorize]
     [HttpPost("complete")]
     public async Task<IActionResult> CompleteQuest([FromBody]UpdateQuest updateQuest) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
 
         var result = await _questService.CompleteQuest(updateQuest.QuestId, userIdClaim);
         
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
     
     [Authorize]
     [HttpPost("update-owner")]
     public async Task<IActionResult> UpdateOwner([FromBody]UpdateQuest updateQuest) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
 
         var result = await _questService.UpdateOwner(updateQuest.QuestId, userIdClaim);
 
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
     
     [Authorize]
-    [HttpPost("get")]
+    [HttpPost("get-by-id")]
     public async Task<IActionResult> GetQuestByQuestId(string questId) {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+
         var quest = await _questService.GetQuestByQuestId(questId);
 
         if (quest == null) return NotFound();
@@ -104,18 +106,26 @@ public class QuestController : Controller {
     }
     
     [Authorize]
-    [HttpPost("by-voisinage")]
-    public async Task<IActionResult> GetQuestsByVoisinageId(int voisinageId) {
-        var quests = await _questService.GetQuestsByVoisinageId(voisinageId);
+    [HttpPost("get-by-voisinage")]
+    public async Task<IActionResult> GetQuestsByVoisinageId() {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+        
+        var quests = await _questService.GetQuestsByUserVoisinageAsync(userIdClaim);
+        if (quests == null) return NotFound();
 
         return Ok(quests);
     }
     
     [Authorize]
-    [HttpPost("by-user")]
-    public async Task<IActionResult> GetQuestsByUserId(string userId) {
-        var quests = await _questService.GetQuestsByUserId(userId);
-
+    [HttpPost("get-by-user")]
+    public async Task<IActionResult> GetQuestsByUserId() {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+        
+        var quests = await _questService.GetQuestsByUserId(userIdClaim);
+        if (quests == null) return NotFound();
+        
         return Ok(quests);
     }
 }

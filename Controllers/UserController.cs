@@ -12,18 +12,18 @@ public class UserController : Controller {
     public UserController(UserService userService) {
         _userService = userService;
     }
-
+    
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUser createUser) {
         var result = await _userService.CreateUserAsync(createUser);
         
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
 
     [HttpDelete("{userId}")]
     public async Task<IActionResult> DeleteUser(string userId) {
         var result = await _userService.DeleteUserAsync(userId);
         
-        return StatusCode(result.StatusCode, result.Message);
+        return StatusCode(result.StatusCode);
     }
 }

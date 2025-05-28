@@ -32,10 +32,11 @@ public class UserLogin  {
     public string Password { get; set; }
 }
 
-public class UserInfo {
+public class UserCard {
     public string Name { get; set; }
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
+    public DateTime? LastLogin { get; set; }
 }
 
 public class UserQuests {

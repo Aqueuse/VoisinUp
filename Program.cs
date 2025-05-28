@@ -94,6 +94,9 @@ builder.Services.AddScoped<VoisinageService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 
+builder.Services.AddScoped<QuestCategoryRepository>();
+builder.Services.AddScoped<QuestCategoryService>();
+
 builder.Services.AddScoped<AuthentificationService>();
 
 var app = builder.Build();
@@ -113,13 +116,13 @@ if (!app.Environment.IsDevelopment()) {
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// 🔥 Activer CORS avant les Controllers
+app.UseCors("AllowVue");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseStaticFiles();
-
-// 🔥 Activer CORS avant les Controllers
-app.UseCors("AllowVue");
 
 // Active les endpoints API
 app.MapControllers();

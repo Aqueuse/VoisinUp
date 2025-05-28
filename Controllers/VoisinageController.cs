@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VoisinUp.Services;
 
 namespace VoisinUp.Controllers;
 
+[ApiController]
+[Route("/api/voisinage")]
 public class VoisinageController : Controller {
     private readonly VoisinageService _voisinageService;
 
@@ -10,9 +14,14 @@ public class VoisinageController : Controller {
         _voisinageService = voisinageService;
     }
 
-    [HttpGet("{voisinageId}")]
-    public async Task<IActionResult> GetVoisins(int voisinageId) {
-        var voisins = await _voisinageService.GetVoisinsByIdAsync(voisinageId);
+    [Authorize]
+    [HttpPost("get-by-voisinage-id")]
+    public async Task<IActionResult> GetVoisins() {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+        
+        var voisins = await _voisinageService.GetUserVoisinsAsync(userIdClaim);
+        if (voisins == null) return NotFound();
         
         return Ok(voisins);
     }

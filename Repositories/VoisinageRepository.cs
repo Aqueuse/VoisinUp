@@ -20,11 +20,33 @@ public class VoisinageRepository {
         return voisinage.First();
     }
     
-    public async Task<User[]> GetVoisinsByIdAsync(int voisinageId) {
+    public async Task<UserCard[]> GetVoisinsByVoisinageIdAsync(int voisinageId, string userId) {
         await using var connection = new NpgsqlConnection(_connectionString);
+        
+        var allUsers = await connection.QueryAsync<User>(q => q.VoisinageId == voisinageId);
 
-        var voisins = await connection.QueryAsync<User>(q => q.VoisinageId == voisinageId);
+        var enumerable = allUsers.ToList();
+        var currentUser = enumerable.FirstOrDefault(u => u.UserId == userId);
+        var others = enumerable.Where(u => u.UserId != userId);
 
-        return voisins.ToArray();
+        var result = new List<UserCard>();
+
+        if (currentUser != null) {
+            result.Add(new UserCard {
+                Name = currentUser.Name,
+                AvatarUrl = currentUser.AvatarUrl,
+                Bio = currentUser.Bio,
+                LastLogin = currentUser.LastLogin
+            });
+        }
+
+        result.AddRange(others.Select(v => new UserCard {
+            Name = v.Name,
+            AvatarUrl = v.AvatarUrl,
+            Bio = v.Bio,
+            LastLogin = v.LastLogin
+        }));
+        
+        return result.ToArray();
     }
 }
