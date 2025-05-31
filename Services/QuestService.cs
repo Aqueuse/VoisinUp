@@ -4,12 +4,14 @@ using VoisinUp.Repositories;
 namespace VoisinUp.Services;
 
 public class QuestService {
-    private QuestRepository _questRepository;
-    private UserService _userService;
+    private readonly QuestRepository _questRepository;
+    private readonly UserService _userService;
+    private readonly QuestCategoryService _questCategoryService;
 
-    public QuestService(QuestRepository questRepository, UserService userService) {
+    public QuestService(QuestRepository questRepository, UserService userService, QuestCategoryService questCategoryService) {
         _questRepository = questRepository;
         _userService = userService;
+        _questCategoryService = questCategoryService;
     }
     
     public async Task<ServiceResult> CreateQuest(CreateQuest createQuest, string userId) {
@@ -18,19 +20,45 @@ public class QuestService {
         
         var quest = new Quest {
             QuestId = Guid.NewGuid().ToString(),
-            Description = createQuest.Description,
-            Name = createQuest.Name,
             CreatedBy = userId,
             VoisinageId = user.VoisinageId,
-            DateCreated = DateTime.UtcNow,
-            Status = QuestStatus.await_participants.ToString(),
-            Categories = createQuest.Categories
+            Name = createQuest.Name,
+            Description = createQuest.Description,
+            Status = nameof(QuestStatus.await_participants),
+            DateCreated = DateTime.UtcNow
         };
         
         await _questRepository.CreateQuestAsync(quest);
+
+        await _questCategoryService.AddQuestCategories(quest.QuestId, createQuest.Categories);
+        
         return new ServiceResult { StatusCode = 200};
     }
+    
+    public async Task<ServiceResult> UpdateQuest(UpdateQuest updateQuest, string userId) {
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user == null) return new ServiceResult { StatusCode = 404 };
 
+        var questToUpdate = await _questRepository.GetQuestByQuestId(updateQuest.QuestId);
+        if (questToUpdate == null) return new ServiceResult { StatusCode = 404 };
+        
+        var quest = new Quest {
+            QuestId = questToUpdate.QuestId,
+            CreatedBy = questToUpdate.CreatedBy,
+            VoisinageId = questToUpdate.VoisinageId,
+            Name = updateQuest.Name,
+            Description = updateQuest.Description,
+            Status = questToUpdate.Status,
+            DateCreated = DateTime.SpecifyKind(questToUpdate.DateCreated, DateTimeKind.Utc)
+        };
+        
+        await _questRepository.UpdateQuest(quest);
+
+        await _questCategoryService.EditQuestCategories(quest.QuestId, updateQuest.Categories);
+        
+        return new ServiceResult { StatusCode = 200};
+    }
+    
     public async Task<ServiceResult> DeleteQuest(string questId, string userId) {
         // verify if the quest exist
         var quest = await GetQuestByQuestId(questId);
@@ -110,28 +138,67 @@ public class QuestService {
         return new ServiceResult { StatusCode = 200};
     }
 
-    public async Task<QuestCard[]?> GetQuestsByUserId(string userId) {
+    public async Task<QuestDetails[]?> GetQuestsByUserId(string userId) {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null) return null;
 
         var quests = await _questRepository.GetQuestsByUserId(userId);
-        return quests;
+
+        var questsDetailsList = new List<QuestDetails>();
+
+        foreach (var quest in quests) {
+            var participants = await _questRepository.GetParticipantsForQuestAsync(quest.QuestId);
+            
+            questsDetailsList.Add(
+                new QuestDetails {
+                    QuestId = quest.QuestId,
+                    CreatedBy = quest.CreatedBy,
+                    Name = quest.Name,
+                    Description = quest.Description,
+                    Status = quest.Status,
+                    DateCreated = quest.DateCreated,
+                    DateStarted = quest.DateStarted,
+                    Participants = participants,
+                    Categories = await _questCategoryService.GetQuestCategories(quest.QuestId),
+                    IsOwner = userId == quest.CreatedBy,
+                    IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId)
+                }
+            );
+        }
+        
+        return questsDetailsList.ToArray();
     }
     
-    public async Task<Quest?> GetQuestByQuestId(string questId) {
+    public async Task<QuestDetails?> GetQuestByQuestId(string questId) {
         var quest = await _questRepository.GetQuestByQuestId(questId);
-        return quest;
+        if (quest == null) return null;
+        
+        var questDetails = new QuestDetails {
+            QuestId = quest.QuestId,
+            CreatedBy = quest.CreatedBy,
+            Name = quest.Name,
+            Description = quest.Description,
+            Status = quest.Status,
+            DateCreated = quest.DateCreated,
+            DateStarted = quest.DateStarted,
+            Participants = await _questRepository.GetParticipantsForQuestAsync(questId),
+            Categories = await _questCategoryService.GetQuestCategories(questId),
+            IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId)
+        };
+        
+        return questDetails;
     }
     
-    public async Task<QuestCard[]?> GetQuestsByUserVoisinageAsync(string userId) {
+    public async Task<QuestDetails[]?> GetQuestsByUserVoisinageId(string userId) {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null) return null;
         
-        var quests = await _questRepository.GetQuestsByVoisinageId(user.VoisinageId);
+        var quests = await _questRepository.GetQuestsByVoisinageId(user.VoisinageId, userId);
         
         foreach (var quest in quests) {
             if (quest.QuestId == null) continue;
-            quest.participants = await _questRepository.GetParticipantsForQuestAsync(quest.QuestId);
+            quest.Participants = await _questRepository.GetParticipantsForQuestAsync(quest.QuestId);
+            quest.Categories = await _questCategoryService.GetQuestCategories(quest.QuestId);
         }
 
         return quests;

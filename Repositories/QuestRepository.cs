@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Microsoft.Extensions.Logging.Console;
+using Npgsql;
 using RepoDb;
 using VoisinUp.Configuration;
 using VoisinUp.Models;
@@ -15,35 +16,25 @@ public class QuestRepository {
     // CREATE
     public async Task CreateQuestAsync(Quest quest) {
         await using var connection = new NpgsqlConnection(_connectionString);
-
-        if (string.IsNullOrEmpty(quest.QuestId)) {
-            throw new InvalidOperationException("QuestId ne peut pas être null !");
-        }
-
+        
         await connection.InsertAsync(quest);
         
         await connection.InsertAsync(new UserQuests { QuestId = quest.QuestId, UserId = quest.CreatedBy});
-        
-        foreach (var categoryId in quest.Categories.Take(2)) {
-            await connection.InsertAsync(new QuestCategories { QuestId = quest.QuestId, CategoryId = categoryId});
-        }
         
         Console.WriteLine("[Success] Created quest with "+quest.QuestId);
     }
     
     // UPDATE
-    public async Task<Quest> UpdateQuest(Quest quest) {
+    public async Task UpdateQuest(Quest quest) {
         await using var connection = new NpgsqlConnection(_connectionString);
 
         var rowsAffected = await connection.UpdateAsync(quest);
-
         if (rowsAffected > 0) {
-            return quest;
+            Console.WriteLine("[Success] quest "+quest.QuestId +" updated");
+            return;
         }
 
         Console.WriteLine("[Error] can't update the quest : "+quest.QuestId);
-        
-        return quest;
     }
     
     // GET
@@ -55,30 +46,34 @@ public class QuestRepository {
         return quest.First();
     }
 
-    public async Task<QuestCard[]> GetQuestsByVoisinageId(int voisinageId) {
+    public async Task<QuestDetails[]> GetQuestsByVoisinageId(int voisinageId, string userId) {
         await using var connection = new NpgsqlConnection(_connectionString);
 
         var quests = await connection.QueryAsync<Quest>(p => p.VoisinageId == voisinageId);
 
-        List<QuestCard> questCards = new List<QuestCard>();
+        List<QuestDetails> questCards = new List<QuestDetails>();
         
         foreach (var quest in quests) {
-            questCards.Add(new QuestCard {
-                QuestId = quest.QuestId,
-                CreatedBy = quest.CreatedBy,
-                Categories = quest.Categories,
-                DateCreated = quest.DateCreated,
-                DateStarted = quest.DateStarted,
-                Description = quest.Description,
-                Name = quest.Name,
-                participants = await GetParticipantsForQuestAsync(quest.QuestId)
-            });
+            var participation = await IsUserParticipatingOnQuest(quest.QuestId, userId);
+            
+            if (!participation) {
+                questCards.Add(new QuestDetails {
+                    QuestId = quest.QuestId,
+                    CreatedBy = quest.CreatedBy,
+                    Name = quest.Name,
+                    Description = quest.Description,
+                    Status = quest.Status,
+                    DateCreated = quest.DateCreated,
+                    DateStarted = quest.DateStarted,
+                    IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId)
+                });
+            }
         }
         
         return questCards.ToArray();
     }
 
-    public async Task<QuestCard[]> GetQuestsByUserId(string userId) {
+    public async Task<Quest[]> GetQuestsByUserId(string userId) {
         await using var connection = new NpgsqlConnection(_connectionString);
         
         // Étape 1 : Récupérer les QuestId associés à l'utilisateur
@@ -90,40 +85,49 @@ public class QuestRepository {
         // Étape 2 : Récupérer les quêtes correspondantes
         var quests = await connection.QueryAsync<Quest>(q => questIds.Contains(q.QuestId));
 
-        List<QuestCard> questCards = new List<QuestCard>();
+        List<Quest> questDetailsList = new List<Quest>();
         
         foreach (var quest in quests) {
-            questCards.Add(new QuestCard {
+            questDetailsList.Add(new Quest {
                 QuestId = quest.QuestId,
                 CreatedBy = quest.CreatedBy,
-                Categories = quest.Categories,
                 DateCreated = quest.DateCreated,
                 DateStarted = quest.DateStarted,
                 Description = quest.Description,
                 Name = quest.Name,
-                participants = await GetParticipantsForQuestAsync(quest.QuestId)
+                Status = quest.Status
             });
         }
         
-        return questCards.ToArray();
+        return questDetailsList.ToArray();
     }
 
     public async Task<List<UserCard>> GetParticipantsForQuestAsync(string questId) {
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var quests = await connection.QueryAsync<UserQuests>(q => q.QuestId == questId);
-        var userIds = quests.Select(q => q.UserId).Distinct().ToList();
+        var usersOnQuest = await connection.QueryAsync<UserQuests>(q => q.QuestId == questId);
         
-        if (!userIds.Any()) return new List<UserCard>();
+        // TODO : optimize with LINQ
+        var userQuestsEnumerable = usersOnQuest.ToList();
+        
+        var userCards = new List<UserCard>();
+        
+        foreach (var userQuest in userQuestsEnumerable) {
+            var users = await connection.QueryAsync<User>(u => u.UserId == userQuest.UserId);
 
-        var users = await connection.QueryAsync<User>(u => userIds.Contains(u.UserId));
-        
-        return users.Select(u => new UserCard {
-            Name = u.Name,
-            AvatarUrl = u.AvatarUrl,
-            Bio = u.Bio,
-            LastLogin = u.LastLogin
-        }).ToList();
+            var user = users.First();
+            
+            userCards.Add(
+                new UserCard {
+                    Name = user.Name,
+                    AvatarUrl = user.AvatarUrl,
+                    Bio = user.Bio,
+                    LastLogin = user.LastLogin
+                }
+            );
+        }
+
+        return userCards;
     }
 
     public async Task JoinQuest(string questId, string userId) {

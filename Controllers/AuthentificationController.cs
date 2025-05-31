@@ -16,11 +16,10 @@ public class AuthentificationController : Controller {
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] UserLogin request)
-    {
+    public async Task<IActionResult> Login([FromBody] UserLogin request) {
         var result = await _userService.AuthenticateUserAsync(request.Email, request.Password);
-
-        if (result.StatusCode == 200 && result.Data is User user) {
+        
+        if (result is { StatusCode: 200, Data: User user }) {
             var token = _authentificationService.GenerateJwtToken(user);
             return StatusCode(200, new { token });
         }

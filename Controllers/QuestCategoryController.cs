@@ -15,12 +15,12 @@ public class QuestCategoryController : Controller {
     }
     
     [Authorize]
-    [HttpPost("get-categories")]
+    [HttpGet("get-categories")]
     public async Task<IActionResult> GetCategories() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
-        var resultat = await _questCategoryService.GetCategories();
+        var resultat = await _questCategoryService.GetAllCategories();
         
         return StatusCode(resultat.StatusCode, resultat.Data);
     }

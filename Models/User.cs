@@ -16,7 +16,6 @@ public class User {
     public string Email { get; set; }
     public string PasswordHash { get; set; }
     
-    public DateTime? BirthDate { get; set; }
     public DateTime? CreationDate { get; set; }
     public DateTime? LastLogin { get; set; }
 
@@ -53,6 +52,4 @@ public class CreateUser {
 
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
-
-    public DateTime BirthDate { get; set; }
 }

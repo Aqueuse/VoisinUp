@@ -25,6 +25,17 @@ public class QuestController : Controller {
         
         return StatusCode(result.StatusCode);
     }
+    
+    [Authorize]
+    [HttpPost("update")]
+    public async Task<IActionResult> Update([FromBody] UpdateQuest updatedQuest) {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+        
+        var result = await _questService.UpdateQuest(updatedQuest, userIdClaim);
+        
+        return StatusCode(result.StatusCode);
+    }
 
     [Authorize]
     [HttpPost("delete")]
@@ -93,32 +104,34 @@ public class QuestController : Controller {
     }
     
     [Authorize]
-    [HttpPost("get-by-id")]
+    [HttpGet("get-by-id/{questId}")]
     public async Task<IActionResult> GetQuestByQuestId(string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
         var quest = await _questService.GetQuestByQuestId(questId);
-
-        if (quest == null) return NotFound();
         
+        if (quest == null) return NotFound();
+
         return Ok(quest);
     }
     
     [Authorize]
-    [HttpPost("get-by-voisinage")]
+    [HttpGet("get-by-voisinage")]
     public async Task<IActionResult> GetQuestsByVoisinageId() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
         
-        var quests = await _questService.GetQuestsByUserVoisinageAsync(userIdClaim);
+        var quests = await _questService.GetQuestsByUserVoisinageId(userIdClaim);
+        
         if (quests == null) return NotFound();
 
+        Console.WriteLine(quests.Length);
         return Ok(quests);
     }
     
     [Authorize]
-    [HttpPost("get-by-user")]
+    [HttpGet("get-by-user")]
     public async Task<IActionResult> GetQuestsByUserId() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();

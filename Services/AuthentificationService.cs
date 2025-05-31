@@ -15,11 +15,11 @@ public class AuthentificationService {
         _config = config;
     }
 
-    public string GenerateJwtToken(User? user) {
+    public string GenerateJwtToken(User user) {
         var secretKey = _config["JwtSettings:Secret"];
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        
         var claims = new[] {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserId),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),

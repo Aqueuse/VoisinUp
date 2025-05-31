@@ -15,7 +15,7 @@ public class VoisinageController : Controller {
     }
 
     [Authorize]
-    [HttpPost("get-by-voisinage-id")]
+    [HttpGet("get-by-voisinage-id")]
     public async Task<IActionResult> GetVoisins() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
