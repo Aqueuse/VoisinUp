@@ -37,6 +37,27 @@ public class UserRepository {
         // }
     }
 
+    public async Task EditUserAsync(User user) {
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await connection.UpdateAsync(user);
+        
+        Console.WriteLine("[Success] user successfully edited");
+    }
+
+    // 🔹 Supprime un utilisateur et sa grille
+    public async Task DeleteUserAsync(string userId) {
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await connection.DeleteAsync<UserQuests>(q => q.UserId == userId);
+
+        await connection.DeleteAsync<User>(a => a.UserId == userId);
+        
+        Console.WriteLine("[Success] user successfully deleted");
+        
+        // TODO remove GRILLE
+    }
+    
     // 🔹 query un utilisateur by userId
     public async Task<User?> GetUserByIdAsync(string userId) {
         await using var _connection = new NpgsqlConnection(_connectionString);
@@ -53,19 +74,5 @@ public class UserRepository {
         var user = await _connection.QueryAsync<User>(u => u.Email == email);
 
         return user.FirstOrDefault();
-    }
-    
-
-    // 🔹 Supprime un utilisateur et sa grille
-    public async Task DeleteUserAsync(string userId) {
-        await using var connection = new NpgsqlConnection(_connectionString);
-
-        await connection.DeleteAsync<UserQuests>(q => q.UserId == userId);
-
-        await connection.DeleteAsync<User>(a => a.UserId == userId);
-        
-        Console.WriteLine("[Success] user successfully deleted");
-        
-        // TODO remove GRILLE
     }
 }

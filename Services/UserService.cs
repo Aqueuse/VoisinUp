@@ -52,6 +52,18 @@ public class UserService {
         return new ServiceResult { StatusCode = 200};
     }
 
+    public async Task<ServiceResult> EditUserAsync(string userId, string name, string? bio, string? avatarURL) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null) return new ServiceResult { StatusCode = 404};
+
+        user.Name = name;
+        user.Bio = bio;
+        user.AvatarUrl = avatarURL;
+        
+        await _userRepository.EditUserAsync(user);
+        return new ServiceResult { StatusCode = 200};
+    }
+
     public async Task<ServiceResult> AuthenticateUserAsync(string email, string password) {
         var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return new ServiceResult { StatusCode = 404};

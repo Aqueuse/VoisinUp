@@ -3,7 +3,7 @@
 public class User {
     public string? UserId { get; set; }
     
-    public string Name { get; init; }
+    public string Name { get; set; }
     
     public int VoisinageId { get; set; }
 
@@ -50,6 +50,12 @@ public class CreateUser {
     public int VoisinageId { get; init; }
     public string PasswordHash { get; set; }
 
+    public string? AvatarUrl { get; set; }
+    public string? Bio { get; set; }
+}
+
+public class EditUser {
+    public string Name { get; init; }
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
 }

@@ -38,8 +38,8 @@ public class QuestController : Controller {
     }
 
     [Authorize]
-    [HttpPost("delete")]
-    public async Task<IActionResult> Delete(string questId) {
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteQuest([FromBody] string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
@@ -50,7 +50,7 @@ public class QuestController : Controller {
     
     [Authorize]
     [HttpPost("join")]
-    public async Task<IActionResult> JoinQuest(string questId) {
+    public async Task<IActionResult> JoinQuest([FromBody] string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
@@ -61,7 +61,7 @@ public class QuestController : Controller {
     
     [Authorize]
     [HttpDelete("leave")]
-    public async Task<IActionResult> LeaveQuest(string questId) {
+    public async Task<IActionResult> LeaveQuest([FromBody] string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
@@ -71,34 +71,34 @@ public class QuestController : Controller {
     }
     
     [Authorize]
-    [HttpPost("start")]
-    public async Task<IActionResult> StartQuest([FromBody]UpdateQuest updateQuest) {
+    [HttpPost("launch")]
+    public async Task<IActionResult> LaunchQuest([FromBody]string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
-        var result = await _questService.StartQuest(updateQuest.QuestId, userIdClaim);
+        var result = await _questService.LaunchQuest(questId, userIdClaim);
 
         return StatusCode(result.StatusCode);
     }
     
     [Authorize]
     [HttpPost("complete")]
-    public async Task<IActionResult> CompleteQuest([FromBody]UpdateQuest updateQuest) {
+    public async Task<IActionResult> CompleteQuest([FromBody]string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
-        var result = await _questService.CompleteQuest(updateQuest.QuestId, userIdClaim);
+        var result = await _questService.CompleteQuest(questId, userIdClaim);
         
         return StatusCode(result.StatusCode);
     }
     
     [Authorize]
-    [HttpPost("update-owner")]
-    public async Task<IActionResult> UpdateOwner([FromBody]UpdateQuest updateQuest) {
+    [HttpPost("claim")]
+    public async Task<IActionResult> Claim([FromBody]string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
 
-        var result = await _questService.UpdateOwner(updateQuest.QuestId, userIdClaim);
+        var result = await _questService.Claim(questId, userIdClaim);
 
         return StatusCode(result.StatusCode);
     }
@@ -125,8 +125,6 @@ public class QuestController : Controller {
         var quests = await _questService.GetQuestsByUserVoisinageId(userIdClaim);
         
         if (quests == null) return NotFound();
-
-        Console.WriteLine(quests.Length);
         return Ok(quests);
     }
     

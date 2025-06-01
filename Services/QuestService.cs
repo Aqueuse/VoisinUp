@@ -71,7 +71,7 @@ public class QuestService {
         return new ServiceResult { StatusCode = 200};
     }
     
-    public async Task<ServiceResult> StartQuest(string questId, string userId) {
+    public async Task<ServiceResult> LaunchQuest(string questId, string userId) {
         // verify if the quest exist
         var quest = await GetQuestByQuestId(questId);
         if (quest == null) return new ServiceResult { StatusCode = 404};
@@ -121,7 +121,7 @@ public class QuestService {
         return new ServiceResult { StatusCode = 200};
     }
 
-    public async Task<ServiceResult> UpdateOwner(string questId, string userId) {
+    public async Task<ServiceResult> Claim(string questId, string userId) {
         // check if the quest exist
         var quest = await GetQuestByQuestId(questId);
         if (quest == null) return new ServiceResult { StatusCode = 404};
