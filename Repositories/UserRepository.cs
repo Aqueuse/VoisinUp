@@ -62,9 +62,10 @@ public class UserRepository {
     public async Task<User?> GetUserByIdAsync(string userId) {
         await using var _connection = new NpgsqlConnection(_connectionString);
 
-        var user = await _connection.QueryAsync<User>(u => u.UserId == userId);
-
-        return user.First();
+        var userQuery = await _connection.QueryAsync<User>(u => u.UserId == userId);
+        var user = userQuery.First();
+        
+        return user;
     }
     
     // 🔹 query un utilisateur by email

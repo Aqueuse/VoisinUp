@@ -19,6 +19,27 @@ public class UserService {
         var user = await _userRepository.GetUserByIdAsync(userId);
         return user;
     }
+
+    public async Task<ServiceResult> GetUserProfileByIdAsync(string userId) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null) return new ServiceResult { StatusCode = 404 };
+        
+        var userProfile = new UserProfile {
+            Name = user.Name,
+            VoisinageId = user.VoisinageId,
+            AvatarUrl = user.AvatarUrl,
+            Bio = user.Bio,
+            TraitsQuantity = user.TraitsQuantity,
+            CarreauxQuantity = user.CarreauxQuantity,
+            Email = user.Email,
+            CreationDate = user.CreationDate,
+            LastLogin = user.LastLogin,
+            
+            GrilleAssets = user.GrilleAssets
+        };
+
+        return new ServiceResult { StatusCode = 200, Data = userProfile};
+    }
     
     // 🔹 Crée un utilisateur et sa grille 100x100x5
     public async Task<ServiceResult> CreateUserAsync(CreateUser createUser) {
@@ -45,7 +66,9 @@ public class UserService {
             PasswordHash = hashedPassword,
             Country = "",
             Commune = "",
-            VoisinageId = createUser.VoisinageId
+            VoisinageId = createUser.VoisinageId,
+            Bio = createUser.Bio,
+            AvatarUrl = createUser.AvatarUrl
         };
         
         await _userRepository.CreateUserAsync(userToCreate);
@@ -79,5 +102,14 @@ public class UserService {
         await _userRepository.DeleteUserAsync(userId);
 
         return new ServiceResult { StatusCode = 200};
+    }
+
+    public async Task GiveTraits(string userId, int traitsQuantity) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null) return;
+
+        user.TraitsQuantity += traitsQuantity;
+        
+        await _userRepository.EditUserAsync(user);
     }
 }

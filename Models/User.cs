@@ -10,8 +10,8 @@ public class User {
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
     
-    public int TraitQuantity { get; set; }
-    public int CarreauQuantity { get; set; }
+    public int TraitsQuantity { get; set; }
+    public int CarreauxQuantity { get; set; }
     
     public string Email { get; set; }
     public string PasswordHash { get; set; }
@@ -21,6 +21,26 @@ public class User {
 
     public string Commune { get; set; }
     public string Country { get; set; }
+    
+    // 🔥 Relation avec la table des assets de l'utilisateur
+    public List<GridAsset> GrilleAssets { get; set; } = new();
+}
+
+public class UserProfile {
+    public string Name { get; set; }
+    
+    public int VoisinageId { get; set; }
+
+    public string? AvatarUrl { get; set; }
+    public string? Bio { get; set; }
+    
+    public int TraitsQuantity { get; set; }
+    public int CarreauxQuantity { get; set; }
+    
+    public string Email { get; set; }
+    
+    public DateTime? CreationDate { get; set; }
+    public DateTime? LastLogin { get; set; }
     
     // 🔥 Relation avec la table des assets de l'utilisateur
     public List<GridAsset> GrilleAssets { get; set; } = new();

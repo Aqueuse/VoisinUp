@@ -130,6 +130,27 @@ public class QuestRepository {
         return userCards;
     }
 
+    public async Task<List<string>> GetParticipantsUserIdForQuestAsync(string questId) {
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        var usersOnQuest = await connection.QueryAsync<UserQuests>(q => q.QuestId == questId);
+        
+        // TODO : optimize with LINQ
+        var userQuestsEnumerable = usersOnQuest.ToList();
+        
+        var participants = new List<string>();
+        
+        foreach (var userQuest in userQuestsEnumerable) {
+            var users = await connection.QueryAsync<User>(u => u.UserId == userQuest.UserId);
+
+            var user = users.First();
+            if (user.UserId != null)
+                participants.Add(user.UserId);
+        }
+
+        return participants;
+    }
+    
     public async Task JoinQuest(string questId, string userId) {
         await using var connection = new NpgsqlConnection(_connectionString);
 

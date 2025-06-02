@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoisinUp.Models;
 using VoisinUp.Services;
@@ -14,15 +15,16 @@ public class UserController : Controller {
         _userService = userService;
     }
 
+    [Authorize]
     [HttpGet("get-user-profile")]
     public async Task<IActionResult> GetUserProfile() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
         
-        var profile = await _userService.GetUserByIdAsync(userIdClaim);
-        if (profile == null) return NotFound();
-        
-        return Ok(profile);
+        var result = await _userService.GetUserProfileByIdAsync(userIdClaim);
+        if (result.StatusCode == 404) return StatusCode(404);
+
+        return Ok(result.Data);
     }
     
     [HttpPost("create")]
@@ -32,6 +34,7 @@ public class UserController : Controller {
         return StatusCode(result.StatusCode);
     }
     
+    [Authorize]
     [HttpPost("edit")]
     public async Task<IActionResult> EditUser([FromBody] EditUser editUser) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -42,8 +45,9 @@ public class UserController : Controller {
         return StatusCode(result.StatusCode);
     }
     
-    [HttpDelete("{userId}")]
-    public async Task<IActionResult> DeleteUser(string userId) {
+    [Authorize]
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUser([FromBody] string userId) {
         var result = await _userService.DeleteUserAsync(userId);
         
         return StatusCode(result.StatusCode);

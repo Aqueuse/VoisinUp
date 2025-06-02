@@ -112,11 +112,17 @@ public class QuestService {
 
         // only the createur of the quest can complete it
         if (userId != quest.CreatedBy) return new ServiceResult { StatusCode = 409};
+        
+        var participants = await _questRepository.GetParticipantsUserIdForQuestAsync(questId); 
+        
+        foreach (var participant in participants) {
+            // POC : give traits
+            // V1 : also give asset (Todo)
+            // V2 : sometimes give success (Todo)
 
-        // POC : give asset
-        // V1 : also give money (Todo)
-        // V2 : sometimes give success (Todo)
-
+            await _userService.GiveTraits(participant, 20);
+        }
+        
         await _questRepository.DeleteQuest(questId);
         return new ServiceResult { StatusCode = 200};
     }
