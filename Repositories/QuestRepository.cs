@@ -65,7 +65,7 @@ public class QuestRepository {
                     Status = quest.Status,
                     DateCreated = quest.DateCreated,
                     DateStarted = quest.DateStarted,
-                    IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId)
+                    IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId),
                 });
             }
         }

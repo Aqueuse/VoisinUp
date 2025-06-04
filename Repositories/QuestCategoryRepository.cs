@@ -13,7 +13,7 @@ public class QuestCategoryRepository {
     }
     
     // GET
-    public async Task<QuestCategoryDetails[]?> GetAllCategories() {
+    public async Task<QuestCategoryDetails[]?> GetAllCategoriesDetails() {
         await using var connection = new NpgsqlConnection(_connectionString);
 
         var questCategories = await connection.QueryAllAsync<QuestCategoryDetails>();
@@ -21,37 +21,37 @@ public class QuestCategoryRepository {
         return questCategories.ToArray();
     }
 
-    public async Task<List<QuestCategoryDetails>> GetQuestCategories(string questId) {
+    public async Task<List<int>> GetQuestCategoriesId(string questId) {
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        List<QuestCategoryDetails> questCategoriesDetails = new List<QuestCategoryDetails>();
+        List<int> questCategoriesId = new List<int>();
 
         var categories = await connection.QueryAsync<QuestCategories>(q => q.QuestId == questId);
         
         foreach (var category in categories) {
             var categoryDetail = await connection.QueryAsync<QuestCategoryDetails>(q => q.CategoryId == category.CategoryId);
-            questCategoriesDetails.Add(categoryDetail.First());
+            questCategoriesId.Add(categoryDetail.First().CategoryId);
         }
         
-        return questCategoriesDetails;
+        return questCategoriesId;
     }
 
-    public async Task AddQuestCategories(string questId, QuestCategoryDetails[] questCategories) {
+    public async Task AddQuestCategories(string questId, int[] questCategoriesId) {
         await using var connection = new NpgsqlConnection(_connectionString);
         
-        foreach (var category in questCategories) {
-            await connection.InsertAsync(new QuestCategories { QuestId = questId, CategoryId = category.CategoryId});
+        foreach (var categoryId in questCategoriesId) {
+            await connection.InsertAsync(new QuestCategories { QuestId = questId, CategoryId = categoryId});
         }
     }
     
-    public async Task EditQuestCategories(string questId, QuestCategoryDetails[] questCategories) {
+    public async Task EditQuestCategories(string questId, int[] questCategoriesId) {
         await using var connection = new NpgsqlConnection(_connectionString);
         
         // remove old categories
         await connection.DeleteAsync<QuestCategories>(q => q.QuestId == questId);
         
-        foreach (var category in questCategories) {
-            await connection.InsertAsync(new QuestCategories { QuestId = questId, CategoryId = category.CategoryId});
+        foreach (var categoryId in questCategoriesId) {
+            await connection.InsertAsync(new QuestCategories { QuestId = questId, CategoryId = categoryId});
         }
     }
 }

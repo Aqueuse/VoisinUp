@@ -117,10 +117,10 @@ public class QuestService {
         
         foreach (var participant in participants) {
             // POC : give traits
+            await _userService.GiveTraits(participant, 20);
+            
             // V1 : also give asset (Todo)
             // V2 : sometimes give success (Todo)
-
-            await _userService.GiveTraits(participant, 20);
         }
         
         await _questRepository.DeleteQuest(questId);
@@ -153,8 +153,6 @@ public class QuestService {
         var questsDetailsList = new List<QuestDetails>();
 
         foreach (var quest in quests) {
-            var participants = await _questRepository.GetParticipantsForQuestAsync(quest.QuestId);
-            
             questsDetailsList.Add(
                 new QuestDetails {
                     QuestId = quest.QuestId,
@@ -164,7 +162,7 @@ public class QuestService {
                     Status = quest.Status,
                     DateCreated = quest.DateCreated,
                     DateStarted = quest.DateStarted,
-                    Participants = participants,
+                    Participants = await _questRepository.GetParticipantsForQuestAsync(quest.QuestId),
                     Categories = await _questCategoryService.GetQuestCategories(quest.QuestId),
                     IsOwner = userId == quest.CreatedBy,
                     IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId)
