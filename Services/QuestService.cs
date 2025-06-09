@@ -174,6 +174,8 @@ public class QuestService {
     }
     
     public async Task<QuestDetails?> GetQuestByQuestId(string questId) {
+        Console.WriteLine("questId : "+questId);
+        
         var quest = await _questRepository.GetQuestByQuestId(questId);
         if (quest == null) return null;
         

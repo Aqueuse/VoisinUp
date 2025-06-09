@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Console;
-using Npgsql;
+﻿using Npgsql;
 using RepoDb;
 using VoisinUp.Configuration;
 using VoisinUp.Models;
@@ -41,9 +40,20 @@ public class QuestRepository {
     public async Task<Quest?> GetQuestByQuestId(string questId) {
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var quest = await connection.QueryAsync<Quest>(p => p.QuestId == questId);
-
-        return quest.First();
+        try {
+            var quest = await connection.QueryAsync<Quest>(p => p.QuestId == questId);
+            var enumerable = quest as Quest[] ?? quest.ToArray();
+            
+            if (enumerable.Length == 0) {
+                Console.WriteLine("[Error] can't find the quest with questId : "+questId);
+                return null;
+            }
+            return enumerable.First();
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<QuestDetails[]> GetQuestsByVoisinageId(int voisinageId, string userId) {
@@ -161,6 +171,8 @@ public class QuestRepository {
         await using var connection = new NpgsqlConnection(_connectionString);
         
         await connection.DeleteAsync<UserQuests>(q => q.UserId == userId && q.QuestId == questId);
+        
+        Console.WriteLine("[success] Leaved quest with questId "+questId);
     }
     
     public async Task StartQuest(string questId) {

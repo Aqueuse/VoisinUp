@@ -60,11 +60,11 @@ public class QuestController : Controller {
     }
     
     [Authorize]
-    [HttpDelete("leave")]
+    [HttpPost("leave")]
     public async Task<IActionResult> LeaveQuest([FromBody] string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
-
+        
         var result = await _questService.LeaveQuest(questId, userIdClaim);
         
         return StatusCode(result.StatusCode);
@@ -108,7 +108,7 @@ public class QuestController : Controller {
     public async Task<IActionResult> GetQuestByQuestId(string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();
-
+        
         var quest = await _questService.GetQuestByQuestId(questId);
         
         if (quest == null) return NotFound();
