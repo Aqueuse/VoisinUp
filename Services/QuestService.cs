@@ -116,8 +116,8 @@ public class QuestService {
         var participants = await _questRepository.GetParticipantsUserIdForQuestAsync(questId); 
         
         foreach (var participant in participants) {
-            // POC : give traits
-            await _userService.GiveTraits(participant, 20);
+            // POC : give bricks
+            await _userService.GiveBricks(participant, 20);
             
             // V1 : also give asset (Todo)
             // V2 : sometimes give success (Todo)
@@ -174,8 +174,6 @@ public class QuestService {
     }
     
     public async Task<QuestDetails?> GetQuestByQuestId(string questId) {
-        Console.WriteLine("questId : "+questId);
-        
         var quest = await _questRepository.GetQuestByQuestId(questId);
         if (quest == null) return null;
         

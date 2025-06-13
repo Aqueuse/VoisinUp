@@ -29,16 +29,31 @@ public class UserService {
             VoisinageId = user.VoisinageId,
             AvatarUrl = user.AvatarUrl,
             Bio = user.Bio,
-            TraitsQuantity = user.TraitsQuantity,
-            CarreauxQuantity = user.CarreauxQuantity,
+            BricksQuantity = user.BricksQuantity,
+            CakesQuantity = user.CakesQuantity,
             Email = user.Email,
             CreationDate = user.CreationDate,
             LastLogin = user.LastLogin,
-            
+
             GrilleAssets = user.GrilleAssets
         };
 
         return new ServiceResult { StatusCode = 200, Data = userProfile};
+    }
+
+    public async Task<UserCard?> GetUserCard(string userId) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+
+        if (user != null)
+            return new UserCard {
+                Name = user.Name,
+                AvatarUrl = user.AvatarUrl,
+                Bio = user.Bio,
+                LastLogin = user.LastLogin
+            };
+
+        Console.WriteLine("[Error] user "+ userId +"not found");
+        return null;
     }
     
     // 🔹 Crée un utilisateur et sa grille 100x100x5
@@ -104,11 +119,11 @@ public class UserService {
         return new ServiceResult { StatusCode = 200};
     }
 
-    public async Task GiveTraits(string userId, int traitsQuantity) {
+    public async Task GiveBricks(string userId, int bricksQuantity) {
         var user = await _userRepository.GetUserByIdAsync(userId);
         if (user == null) return;
 
-        user.TraitsQuantity += traitsQuantity;
+        user.BricksQuantity += bricksQuantity;
         
         await _userRepository.EditUserAsync(user);
     }

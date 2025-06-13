@@ -10,8 +10,8 @@ public class User {
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
     
-    public int TraitsQuantity { get; set; }
-    public int CarreauxQuantity { get; set; }
+    public int BricksQuantity { get; set; }
+    public int CakesQuantity { get; set; }
     
     public string Email { get; set; }
     public string PasswordHash { get; set; }
@@ -34,8 +34,8 @@ public class UserProfile {
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
     
-    public int TraitsQuantity { get; set; }
-    public int CarreauxQuantity { get; set; }
+    public int BricksQuantity { get; set; }
+    public int CakesQuantity { get; set; }
     
     public string Email { get; set; }
     
