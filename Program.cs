@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepoDb;
 using VoisinUp.Configuration;
+using VoisinUp.Hubs;
 using VoisinUp.Repositories;
 using VoisinUp.Services;
 
@@ -19,7 +20,8 @@ builder.Services.AddCors(options => {
         policy => {
             policy.WithOrigins("http://localhost:5173") // Autorise Vue.js
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -35,6 +37,34 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("missing jwtSettings")))
+        };
+
+        options.Events = new JwtBearerEvents {
+            OnMessageReceived = context => {
+                var origin = context.Request.Headers["Origin"].ToString();
+
+                // 💥 Liste blanche des origines autorisées
+                var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<String[]>();
+
+                if (allowedOrigins == null) {
+                    Console.WriteLine("appsettings.json is missing key AllowedOrigins");
+                }
+
+                if (allowedOrigins != null && !allowedOrigins.Contains(origin)) {
+                    Console.WriteLine($"🚫❗ Origine refusée : {origin}");
+                    context.NoResult(); // stoppe l’auth
+                    return Task.CompletedTask;
+                }
+
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/tavernehub")) {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -80,6 +110,10 @@ builder.Services.AddSwaggerGen(options => {
 
 });
 
+// websocket / taverne
+builder.Services.AddSignalR();
+
+
 // Database
 GlobalConfiguration.Setup().UsePostgreSql();
 
@@ -98,6 +132,10 @@ builder.Services.AddScoped<QuestCategoryRepository>();
 builder.Services.AddScoped<QuestCategoryService>();
 
 builder.Services.AddScoped<AuthentificationService>();
+
+builder.Services.AddScoped<TaverneRepository>();
+builder.Services.AddScoped<TaverneService>();
+builder.Services.AddHostedService<TaverneCleanupService>();
 
 var app = builder.Build();
 
@@ -128,5 +166,8 @@ app.UseStaticFiles();
 
 // Active les endpoints API
 app.MapControllers();
+
+// listen to the taverne
+app.MapHub<TaverneHub>("/tavernehub").RequireCors("AllowVue");
 
 app.Run();
