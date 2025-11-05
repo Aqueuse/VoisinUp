@@ -47,8 +47,11 @@ public class UserController : Controller {
     
     [Authorize]
     [HttpDelete("delete")]
-    public async Task<IActionResult> DeleteUser([FromBody] string userId) {
-        var result = await _userService.DeleteUserAsync(userId);
+    public async Task<IActionResult> DeleteUser() {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+
+        var result = await _userService.DeleteUserAsync(userIdClaim);
         
         return StatusCode(result.StatusCode);
     }

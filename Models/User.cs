@@ -69,9 +69,6 @@ public class CreateUser {
 
     public int VoisinageId { get; init; }
     public string PasswordHash { get; set; }
-
-    public string? AvatarUrl { get; set; }
-    public string? Bio { get; set; }
 }
 
 public class EditUser {

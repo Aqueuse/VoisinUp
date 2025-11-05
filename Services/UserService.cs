@@ -82,8 +82,8 @@ public class UserService {
             Country = "",
             Commune = "",
             VoisinageId = createUser.VoisinageId,
-            Bio = createUser.Bio,
-            AvatarUrl = createUser.AvatarUrl
+            Bio = "",
+            AvatarUrl = ""
         };
         
         await _userRepository.CreateUserAsync(userToCreate);

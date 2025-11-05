@@ -23,7 +23,18 @@ builder.Services.AddCors(options => {
                 .AllowAnyMethod()
                 .AllowCredentials();
         });
+    options.AddPolicy(
+        "AllowUnity",
+        policy => {
+            policy
+                .WithOrigins("http://localhost:80") // Autorise Unity
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
 });
+
+// TODO : when deploying on prod, stop listening to port 80 and setup SSL with port 443
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -41,25 +52,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.Events = new JwtBearerEvents {
             OnMessageReceived = context => {
-                var origin = context.Request.Headers["Origin"].ToString();
-
-                // 💥 Liste blanche des origines autorisées
-                var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<String[]>();
-
-                if (allowedOrigins == null) {
-                    Console.WriteLine("appsettings.json is missing key AllowedOrigins");
-                }
-
-                if (allowedOrigins != null && !allowedOrigins.Contains(origin)) {
-                    Console.WriteLine($"🚫❗ Origine refusée : {origin}");
-                    context.NoResult(); // stoppe l’auth
-                    return Task.CompletedTask;
-                }
-
                 var accessToken = context.Request.Query["access_token"];
-                var path = context.HttpContext.Request.Path;
 
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/tavernehub")) {
+                if (!string.IsNullOrEmpty(accessToken)) {
                     context.Token = accessToken;
                 }
 

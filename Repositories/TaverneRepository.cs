@@ -1,6 +1,5 @@
 ﻿using Npgsql;
 using RepoDb;
-using RepoDb.Enumerations;
 using VoisinUp.Configuration;
 using VoisinUp.Models;
 
