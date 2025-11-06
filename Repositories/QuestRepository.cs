@@ -64,20 +64,16 @@ public class QuestRepository {
         List<QuestDetails> questCards = new List<QuestDetails>();
         
         foreach (var quest in quests) {
-            var participation = await IsUserParticipatingOnQuest(quest.QuestId, userId);
-            
-            if (!participation) {
-                questCards.Add(new QuestDetails {
-                    QuestId = quest.QuestId,
-                    CreatedBy = quest.CreatedBy,
-                    Name = quest.Name,
-                    Description = quest.Description,
-                    Status = quest.Status,
-                    DateCreated = quest.DateCreated,
-                    DateStarted = quest.DateStarted,
-                    IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId),
-                });
-            }
+            questCards.Add(new QuestDetails {
+                QuestId = quest.QuestId,
+                CreatedBy = quest.CreatedBy,
+                Name = quest.Name,
+                Description = quest.Description,
+                Status = quest.Status,
+                DateCreated = quest.DateCreated,
+                DateStarted = quest.DateStarted,
+                IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId)
+            });
         }
         
         return questCards.ToArray();
