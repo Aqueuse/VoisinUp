@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "User", "Voisinage", "VoisinageSuccess", "Asset", "UserAssets", "GridAssets", "UserQuests", "Quest", "QuestCategories", "QuestCategory", "Success", "QuestComment" cascade;
+DROP TABLE IF EXISTS "User", "Voisinage", "VoisinageSuccess", "Asset", "UserAssets", "GridAssets", "UserQuests", "Quest", "QuestCategories", "QuestCategory", "QuestCategoryDetails", "Success", "QuestComment" cascade;
 
 CREATE TABLE "User" (
   "UserId" VARCHAR(36) PRIMARY KEY,

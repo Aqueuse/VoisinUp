@@ -13,10 +13,10 @@ public class QuestCategoryRepository {
     }
     
     // GET
-    public async Task<QuestCategoryDetails[]?> GetAllCategoriesDetails() {
+    public async Task<QuestCategory[]?> GetAllCategoriesDetails() {
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var questCategories = await connection.QueryAllAsync<QuestCategoryDetails>();
+        var questCategories = await connection.QueryAllAsync<QuestCategory>();
 
         return questCategories.ToArray();
     }
@@ -29,7 +29,7 @@ public class QuestCategoryRepository {
         var categories = await connection.QueryAsync<QuestCategories>(q => q.QuestId == questId);
         
         foreach (var category in categories) {
-            var categoryDetail = await connection.QueryAsync<QuestCategoryDetails>(q => q.CategoryId == category.CategoryId);
+            var categoryDetail = await connection.QueryAsync<QuestCategory>(q => q.CategoryId == category.CategoryId);
             questCategoriesId.Add(categoryDetail.First().CategoryId);
         }
         
