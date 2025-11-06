@@ -119,3 +119,6 @@ ALTER TABLE "QuestComment" ADD FOREIGN KEY ("UserId") REFERENCES "User" ("UserId
 -- Index pour booster les recherches
 CREATE INDEX "idx_QuestComment_QuestId" ON "QuestComment" ("QuestId");
 CREATE INDEX "idx_QuestComment_UserId" ON "QuestComment" ("UserId");
+
+INSERT INTO "Voisinage" ("Name", "Commune", "Country")
+VALUES ('Ney', 'Angers', 'France');
