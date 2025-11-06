@@ -123,7 +123,7 @@ CREATE INDEX "idx_QuestComment_UserId" ON "QuestComment" ("UserId");
 INSERT INTO "Voisinage" ("Name", "Commune", "Country")
 VALUES ('Ney', 'Angers', 'France');
 
-INSERT INTO "QuestCategoryDetails" ("CategoryId", "Name", "Description") VALUES
+INSERT INTO "QuestCategory" ("CategoryId", "Name", "Description") VALUES
  (0, 'Solidarité', 'Aide aux voisins : courses, réparations, accompagnement des personnes isolées.'),
  (1, 'Nettoyage', 'Nettoyage des rues, ramassage des déchets, recyclage et tri.'),
  (2, 'Nature', 'Plantation d’arbres, protection de la biodiversité, entretien des espaces verts.'),
