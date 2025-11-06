@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "User", "Voisinage", "VoisinageSuccess", "Asset", "UserAssets", "GridAssets", "UserQuests", "Quest", "QuestCategories", "QuestCategory", "Success" cascade;
+DROP TABLE IF EXISTS "User", "Voisinage", "VoisinageSuccess", "Asset", "UserAssets", "GridAssets", "UserQuests", "Quest", "QuestCategories", "QuestCategory", "Success", "QuestComment" cascade;
 
 CREATE TABLE "User" (
   "UserId" VARCHAR(36) PRIMARY KEY,
@@ -122,3 +122,17 @@ CREATE INDEX "idx_QuestComment_UserId" ON "QuestComment" ("UserId");
 
 INSERT INTO "Voisinage" ("Name", "Commune", "Country")
 VALUES ('Ney', 'Angers', 'France');
+
+INSERT INTO "QuestCategoryDetails" ("CategoryId", "Name", "Description") VALUES
+ (0, 'Solidarité', 'Aide aux voisins : courses, réparations, accompagnement des personnes isolées.'),
+ (1, 'Nettoyage', 'Nettoyage des rues, ramassage des déchets, recyclage et tri.'),
+ (2, 'Nature', 'Plantation d’arbres, protection de la biodiversité, entretien des espaces verts.'),
+ (3, 'Culture', 'Ateliers artistiques, clubs de lecture, événements culturels locaux.'),
+ (4, 'Sport', 'Activités sportives, tournois, défis physiques.'),
+ (5, 'Développement', 'Amélioration du quartier : réparations, embellissement, installation d’équipements.'),
+ (6, 'Découverte', 'Exploration et mise en valeur du patrimoine local, randonnées, défis découverte.'),
+ (7, 'Fête', 'Organisation d’événements festifs, repas de quartier, soirées à thème.'),
+ (8, 'Accueil', 'Accueil des nouveaux voisins, intégration sociale.')
+ON CONFLICT ("CategoryId") DO UPDATE
+    SET "Name" = EXCLUDED."Name",
+        "Description" = EXCLUDED."Description";
