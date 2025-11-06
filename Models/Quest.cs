@@ -48,3 +48,17 @@ public class QuestDetails {
     public List<int> Categories { get; set; }
     public List<UserCard> Participants { get; set; }
 }
+
+public class QuestComment
+{
+    public string CommentId { get; set; } = Guid.NewGuid().ToString();
+    public string QuestId { get; set; }
+    public string UserId { get; set; }
+
+    public string Content { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Relations
+    public string? UserName { get; set; } // pratique pour afficher directement
+    public string? AvatarUrl { get; set; }
+}

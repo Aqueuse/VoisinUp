@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepoDb;
 using VoisinUp.Configuration;
-using VoisinUp.Hubs;
 using VoisinUp.Repositories;
 using VoisinUp.Services;
 
@@ -105,10 +104,6 @@ builder.Services.AddSwaggerGen(options => {
 
 });
 
-// websocket / taverne
-builder.Services.AddSignalR();
-
-
 // Database
 GlobalConfiguration.Setup().UsePostgreSql();
 
@@ -128,18 +123,14 @@ builder.Services.AddScoped<QuestCategoryService>();
 
 builder.Services.AddScoped<AuthentificationService>();
 
-builder.Services.AddScoped<TaverneRepository>();
-builder.Services.AddScoped<TaverneService>();
-builder.Services.AddHostedService<TaverneCleanupService>();
-
 var app = builder.Build();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", false);
 
-if (app.Environment.IsDevelopment()) {
+//if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment()) {
@@ -161,8 +152,5 @@ app.UseStaticFiles();
 
 // Active les endpoints API
 app.MapControllers();
-
-// listen to the taverne
-app.MapHub<TaverneHub>("/tavernehub").RequireCors("AllowVue");
 
 app.Run();
