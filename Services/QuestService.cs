@@ -24,7 +24,6 @@ public class QuestService {
             VoisinageId = user.VoisinageId,
             Name = createQuest.Name,
             Description = createQuest.Description,
-            Status = nameof(QuestStatus.await_participants),
             DateCreated = DateTime.UtcNow
         };
         
@@ -48,7 +47,6 @@ public class QuestService {
             VoisinageId = questToUpdate.VoisinageId,
             Name = updateQuest.Name,
             Description = updateQuest.Description,
-            Status = questToUpdate.Status,
             DateCreated = DateTime.SpecifyKind(questToUpdate.DateCreated, DateTimeKind.Utc)
         };
         
@@ -58,6 +56,8 @@ public class QuestService {
         
         return new ServiceResult { StatusCode = 200};
     }
+    
+    // todo : remove user from quest (prevent cheating)
     
     public async Task<ServiceResult> DeleteQuest(string questId, string userId) {
         // verify if the quest exist
@@ -71,18 +71,6 @@ public class QuestService {
         return new ServiceResult { StatusCode = 200};
     }
     
-    public async Task<ServiceResult> LaunchQuest(string questId, string userId) {
-        // verify if the quest exist
-        var quest = await GetQuestByQuestId(questId);
-        if (quest == null) return new ServiceResult { StatusCode = 404};
-
-        // only the owner of the quest can start it
-        if (quest.CreatedBy != userId) return new ServiceResult {StatusCode = 403};
-
-        await _questRepository.StartQuest(questId);
-        return new ServiceResult { StatusCode = 200};
-    }
-
     public async Task<ServiceResult> JoinQuest(string questId, string userId) {
         var quest = await GetQuestByQuestId(questId);
         if (quest == null) return new ServiceResult { StatusCode = 404};
@@ -159,7 +147,6 @@ public class QuestService {
                     CreatedBy = quest.CreatedBy,
                     Name = quest.Name,
                     Description = quest.Description,
-                    Status = quest.Status,
                     DateCreated = quest.DateCreated,
                     DateStarted = quest.DateStarted,
                     Participants = await _questRepository.GetParticipantsForQuestAsync(quest.QuestId),
@@ -182,7 +169,6 @@ public class QuestService {
             CreatedBy = quest.CreatedBy,
             Name = quest.Name,
             Description = quest.Description,
-            Status = quest.Status,
             DateCreated = quest.DateCreated,
             DateStarted = quest.DateStarted,
             Participants = await _questRepository.GetParticipantsForQuestAsync(questId),

@@ -59,7 +59,6 @@ CREATE TABLE "Quest" (
  "VoisinageId" INT,
  "Name" VARCHAR(100) NOT NULL,
  "Description" TEXT,
- "Status" VARCHAR(50) DEFAULT 'await_participants',
  "DateCreated" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
  "DateStarted" TIMESTAMP
 );

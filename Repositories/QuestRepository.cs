@@ -69,7 +69,6 @@ public class QuestRepository {
                 CreatedBy = quest.CreatedBy,
                 Name = quest.Name,
                 Description = quest.Description,
-                Status = quest.Status,
                 DateCreated = quest.DateCreated,
                 DateStarted = quest.DateStarted,
                 IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId),
@@ -101,8 +100,7 @@ public class QuestRepository {
                 DateCreated = quest.DateCreated,
                 DateStarted = quest.DateStarted,
                 Description = quest.Description,
-                Name = quest.Name,
-                Status = quest.Status
+                Name = quest.Name
             });
         }
         
@@ -170,19 +168,6 @@ public class QuestRepository {
         await connection.DeleteAsync<UserQuests>(q => q.UserId == userId && q.QuestId == questId);
         
         Console.WriteLine("[success] Leaved quest with questId "+questId);
-    }
-    
-    public async Task StartQuest(string questId) {
-        await using var connection = new NpgsqlConnection(_connectionString);
-
-        var updatedQuest = new { Status = QuestStatus.in_progress };
-        var condition = new { QuestId = questId };
-        
-        await connection.UpdateAsync(
-            "Quest",
-            updatedQuest,
-            condition
-        );
     }
     
     // UPDATE ownership
