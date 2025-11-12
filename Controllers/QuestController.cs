@@ -71,17 +71,6 @@ public class QuestController : Controller {
     }
     
     [Authorize]
-    [HttpPost("launch")]
-    public async Task<IActionResult> LaunchQuest([FromBody]string questId) {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdClaim == null) return Unauthorized();
-
-        var result = await _questService.LaunchQuest(questId, userIdClaim);
-
-        return StatusCode(result.StatusCode);
-    }
-    
-    [Authorize]
     [HttpPost("complete")]
     public async Task<IActionResult> CompleteQuest([FromBody]string questId) {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
