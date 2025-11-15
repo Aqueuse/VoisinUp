@@ -16,7 +16,7 @@ public class AssetsController : Controller {
     }
 
     [Authorize]
-    [HttpGet("get_all")]
+    [HttpGet("get-all")]
     public async Task<IActionResult> GetAll() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return Unauthorized();

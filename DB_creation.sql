@@ -32,14 +32,15 @@ CREATE TABLE "VoisinageSuccess" (
 );
 
 CREATE TABLE "Asset" (
-  "AssetId" SERIAL PRIMARY KEY,
+  "AssetId" VARCHAR(36) PRIMARY KEY,
   "AssetName" VARCHAR(100) NOT NULL,
+  "AssetCategory" VARCHAR(36) NOT NULL,  
   "Cost" INT DEFAULT 0
 );
 
 CREATE TABLE "UserAssets" (
   "UserId" VARCHAR(36),
-  "AssetId" INT,
+  "AssetId" VARCHAR(36),
   "Coordinates" VARCHAR(255) NOT NULL,
   PRIMARY KEY("UserId","AssetId")
 );
@@ -123,3 +124,19 @@ INSERT INTO "QuestCategory" ("CategoryId", "Name", "Description") VALUES
 ON CONFLICT ("CategoryId") DO UPDATE
     SET "Name" = EXCLUDED."Name",
         "Description" = EXCLUDED."Description";
+
+INSERT INTO "Asset" ("AssetId", "AssetName", "Cost", "AssetCategory") VALUES
+ ('tree-12345678', 'tree', 10, 'NATURE'),
+ ('trashcan-12345678', 'trashcan', 10, 'PROPRETE'),
+ ('table_pique_nique-12345678', 'table_pique_nique', 10, 'RENCONTRE'),
+ ('stand_de_gauffres-12345678', 'stand_de_gauffres', 10, 'EPIC'),
+ ('radio-12345678', 'radio', 10, 'FUN'),
+ ('public_fountain-12345678', 'public_fountain', 10, 'DECOR'),
+ ('lampadaire-12345678', 'lampadaire', 10, 'ECLAIRAGE'),
+ ('house-12345678', 'house', 10, 'BUILDING'),
+ ('flower_box-12345678', 'flower_box', 10, 'NATURE'),
+ ('bird_nichoir-12345678', 'bird_nichoir', 10, 'NATURE'),
+ ('bench-12345678', 'bench', 10, 'RENCONTRE'),
+ ('barbecue-12345678', 'barbecue', 10, 'RENCONTRE'),
+ ('ballons-12345678', 'ballons', 10, 'FUN')
+;
