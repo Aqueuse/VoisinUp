@@ -35,7 +35,7 @@ public class UserService {
             CreationDate = user.CreationDate,
             LastLogin = user.LastLogin,
 
-            GrilleAssets = user.GrilleAssets
+            UserAssets = user.UserAssets
         };
 
         return new ServiceResult { StatusCode = 200, Data = userProfile};

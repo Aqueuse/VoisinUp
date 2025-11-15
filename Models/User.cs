@@ -23,7 +23,7 @@ public class User {
     public string Country { get; set; }
     
     // 🔥 Relation avec la table des assets de l'utilisateur
-    public List<GridAsset> GrilleAssets { get; set; } = new();
+    public List<UserAssets> UserAssets { get; set; } = new();
 }
 
 public class UserProfile {
@@ -43,7 +43,7 @@ public class UserProfile {
     public DateTime? LastLogin { get; set; }
     
     // 🔥 Relation avec la table des assets de l'utilisateur
-    public List<GridAsset> GrilleAssets { get; set; } = new();
+    public List<UserAssets> UserAssets { get; set; } = new();
 }
 
 public class UserLogin  {

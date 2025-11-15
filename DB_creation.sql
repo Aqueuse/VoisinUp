@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "User", "Voisinage", "VoisinageSuccess", "Asset", "UserAssets", "GridAssets", "UserQuests", "Quest", "QuestCategories", "QuestCategory", "QuestCategoryDetails", "Success", "QuestComment" cascade;
+DROP TABLE IF EXISTS "User", "Voisinage", "VoisinageSuccess", "Asset", "UserAssets", "GridAssets", "UserQuests", "Quest", "QuestCategories", "QuestCategory", "QuestCategoryDetails", "Success", "QuestComment", "GridAssets" cascade;
 
 CREATE TABLE "User" (
   "UserId" VARCHAR(36) PRIMARY KEY,
@@ -34,23 +34,14 @@ CREATE TABLE "VoisinageSuccess" (
 CREATE TABLE "Asset" (
   "AssetId" SERIAL PRIMARY KEY,
   "AssetName" VARCHAR(100) NOT NULL,
-  "AssetUrl" VARCHAR(255) NOT NULL,
-  "Available" BOOLEAN DEFAULT false
+  "Cost" INT DEFAULT 0
 );
 
 CREATE TABLE "UserAssets" (
   "UserId" VARCHAR(36),
   "AssetId" INT,
-  "IsActive" BOOLEAN DEFAULT false,
+  "Coordinates" VARCHAR(255) NOT NULL,
   PRIMARY KEY("UserId","AssetId")
-);
-
-CREATE TABLE "GridAssets" (
-  "UserId" VARCHAR(36) PRIMARY KEY,
-  "X" INT NOT NULL,
-  "Y" INT NOT NULL,
-  "Z" INT DEFAULT 0,
-  "AssetId" INT
 );
 
 CREATE TABLE "Quest" (
@@ -59,8 +50,7 @@ CREATE TABLE "Quest" (
  "VoisinageId" INT,
  "Name" VARCHAR(100) NOT NULL,
  "Description" TEXT,
- "DateCreated" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- "DateStarted" TIMESTAMP
+ "DateCreated" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "QuestCategory" (
@@ -102,8 +92,6 @@ ALTER TABLE "VoisinageSuccess" ADD FOREIGN KEY ("VoisinageId") REFERENCES "Voisi
 ALTER TABLE "VoisinageSuccess" ADD FOREIGN KEY ("SuccessId") REFERENCES "Success" ("SuccessId");
 ALTER TABLE "UserAssets" ADD FOREIGN KEY ("UserId") REFERENCES "User" ("UserId");
 ALTER TABLE "UserAssets" ADD FOREIGN KEY ("AssetId") REFERENCES "Asset" ("AssetId");
-ALTER TABLE "GridAssets" ADD FOREIGN KEY ("UserId") REFERENCES "User" ("UserId");
-ALTER TABLE "GridAssets" ADD FOREIGN KEY ("AssetId") REFERENCES "Asset" ("AssetId");
 ALTER TABLE "Quest" ADD FOREIGN KEY ("CreatedBy") REFERENCES "User" ("UserId") ON DELETE SET NULL ("CreatedBy");
 
 ALTER TABLE "UserQuests" ADD FOREIGN KEY ("QuestId") REFERENCES "Quest" ("QuestId") ON DELETE CASCADE;
