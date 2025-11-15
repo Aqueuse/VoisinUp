@@ -121,6 +121,9 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<QuestCategoryRepository>();
 builder.Services.AddScoped<QuestCategoryService>();
 
+builder.Services.AddScoped<AssetsRepository>();
+builder.Services.AddScoped<AssetsService>();
+
 builder.Services.AddScoped<AuthentificationService>();
 
 var app = builder.Build();
