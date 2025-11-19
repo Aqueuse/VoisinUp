@@ -31,14 +31,6 @@ CREATE TABLE "VoisinageSuccess" (
   PRIMARY KEY("VoisinageId","SuccessId")
 );
 
-CREATE TABLE "Asset" (
-  "AssetId" VARCHAR(100) PRIMARY KEY,
-  "AssetName" VARCHAR(100) NOT NULL,
-  "AssetDescription" TEXT,
-  "AssetCategory" VARCHAR(36) NOT NULL,  
-  "Cost" INT DEFAULT 0
-);
-
 CREATE TABLE "UserAssets" (
   "UserId" VARCHAR(36),
   "AssetId" VARCHAR(36),

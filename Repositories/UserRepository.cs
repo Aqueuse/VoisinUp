@@ -12,29 +12,12 @@ public class UserRepository {
         _connectionString = dbConfig.ConnectionString;
     }
 
-    // 🔹 Crée un utilisateur et sa grille 100x100x5
     public async Task CreateUserAsync(User user) {
         await using var connection = new NpgsqlConnection(_connectionString);
         
         var id = await connection.InsertAsync(user);
 
         Console.WriteLine("[Success] user successfully created. UserId is "+id);
-
-        // // Générer la grille de 100x100x5
-        // var gridAssets = new List<GridAsset>();
-        // for (int x = 0; x < 100; x++) {
-        //     for (int y = 0; y < 100; y++) {
-        //         for (int z = 0; z < 5; z++) {
-        //             gridAssets.Add(new GridAsset {
-        //                 UserId = user.UserId,
-        //                 X = x,
-        //                 Y = y,
-        //                 Z = z,
-        //                 AssetId = null // Aucune asset de base
-        //             });
-        //         }
-        //     }
-        // }
     }
 
     public async Task EditUserAsync(User user) {
@@ -45,7 +28,6 @@ public class UserRepository {
         Console.WriteLine("[Success] user successfully edited");
     }
 
-    // 🔹 Supprime un utilisateur et sa grille
     public async Task DeleteUserAsync(string userId) {
         await using var connection = new NpgsqlConnection(_connectionString);
 
@@ -58,17 +40,19 @@ public class UserRepository {
         // TODO remove GRILLE
     }
     
-    // 🔹 query un utilisateur by userId
     public async Task<User?> GetUserByIdAsync(string userId) {
         await using var _connection = new NpgsqlConnection(_connectionString);
 
         var userQuery = await _connection.QueryAsync<User>(u => u.UserId == userId);
         var user = userQuery.First();
+
+        var userAssets = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId);
+
+        user.UserAssets = userAssets.ToList();
         
         return user;
     }
     
-    // 🔹 query un utilisateur by email
     public async Task<User?> GetUserByEmailAsync(string email) {
         await using var _connection = new NpgsqlConnection(_connectionString);
 
