@@ -46,6 +46,7 @@
       <PackageReference Include="RepoDb.PostgreSql.BulkOperations" Version="1.13.2-alpha1" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.0" />
       <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.0-preview.1.25080.5" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
     </ItemGroup>
 
 </Project>

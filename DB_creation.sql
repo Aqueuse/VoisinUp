@@ -85,7 +85,6 @@ ALTER TABLE "User" ADD FOREIGN KEY ("VoisinageId") REFERENCES "Voisinage" ("Vois
 ALTER TABLE "VoisinageSuccess" ADD FOREIGN KEY ("VoisinageId") REFERENCES "Voisinage" ("VoisinageId");
 ALTER TABLE "VoisinageSuccess" ADD FOREIGN KEY ("SuccessId") REFERENCES "Success" ("SuccessId");
 ALTER TABLE "UserAssets" ADD FOREIGN KEY ("UserId") REFERENCES "User" ("UserId");
-ALTER TABLE "UserAssets" ADD FOREIGN KEY ("AssetId") REFERENCES "Asset" ("AssetId");
 ALTER TABLE "Quest" ADD FOREIGN KEY ("CreatedBy") REFERENCES "User" ("UserId") ON DELETE SET NULL ("CreatedBy");
 
 ALTER TABLE "UserQuests" ADD FOREIGN KEY ("QuestId") REFERENCES "Quest" ("QuestId") ON DELETE CASCADE;

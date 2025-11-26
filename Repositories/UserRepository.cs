@@ -37,7 +37,7 @@ public class UserRepository {
         
         Console.WriteLine("[Success] user successfully deleted");
         
-        // TODO remove GRILLE
+        // TODO remove userStuff from UserAssets
     }
     
     public async Task<User?> GetUserByIdAsync(string userId) {
