@@ -1,0 +1,105 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #fafafa;
+  color: #333;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.nav {
+  margin-left: 40px;
+}
+
+.nav a {
+  margin-right: 20px;
+  text-decoration: none;
+}
+
+/* News box */
+.news-box {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+/* Burger (mobile) */
+.burger {
+  display: none;
+  margin-left: 20px;
+}
+
+/* Hero */
+.hero {
+  background: url('village-header.jpg') center/cover no-repeat;
+  padding: 120px 20px;
+  text-align: center;
+  color: white;
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #ffcc33;
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+/* Features */
+.features {
+  display: flex;
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.feature {
+  background: white;
+  padding: 20px;
+  flex: 1;
+  border-radius: 8px;
+}
+
+/* Articles */
+.articles-list {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+/* Mobile */
+@media(max-width: 800px) {
+  .nav {
+    display: none;
+  }
+  .burger {
+    display: block;
+  }
+  body.menu-open .nav {
+    display: block;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background: white;
+    width: 100%;
+    padding: 20px;
+  }
+}

@@ -1,0 +1,16 @@
+---
+layout: default
+title: "Nouvelles"
+---
+
+<h1>Nouvelles du village</h1>
+
+<div class="articles-list">
+  {% for post in site.posts %}
+    <article class="card">
+      <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+      <p class="date">{{ post.date | date: "%d %B %Y" }}</p>
+      <p>{{ post.excerpt }}</p>
+    </article>
+  {% endfor %}
+</div>
