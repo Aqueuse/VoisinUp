@@ -20,7 +20,7 @@
 
   <div class="news-box">
     {% for post in site.posts limit:2 %}
-      <a href="/VoisinUp/{{ post.url }}">{{ post.title }}</a>
+      <a href="/VoisinUp{{ post.url }}">{{ post.title }}</a>
     {% endfor %}
   </div>
 
