@@ -1,6 +1,0 @@
-﻿services:
-  voisinup:
-    image: voisinup
-    build:
-      context: .
-      dockerfile: Dockerfile
