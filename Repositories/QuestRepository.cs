@@ -71,8 +71,11 @@ public class QuestRepository {
                 Description = quest.Description,
                 DateCreated = quest.DateCreated,
                 DateStarted = quest.DateStarted,
-                IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy, quest.QuestId),
-                IsOwner = userId == quest.CreatedBy
+                IsOrphan = await IsUserParticipatingOnQuest(quest.CreatedBy,
+                    quest.QuestId),
+                IsOwner = userId == quest.CreatedBy,
+                Categories = await GetQuestCategoriesId(quest.QuestId),
+                Participants = await GetParticipantsForQuestAsync(quest.QuestId)
             });
         }
         
@@ -154,6 +157,21 @@ public class QuestRepository {
         }
 
         return participants;
+    }
+    
+    public async Task<List<int>> GetQuestCategoriesId(string questId) {
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        List<int> questCategoriesId = new List<int>();
+
+        var categories = await connection.QueryAsync<QuestCategories>(q => q.QuestId == questId);
+        
+        foreach (var category in categories) {
+            var categoryDetail = await connection.QueryAsync<QuestCategory>(q => q.CategoryId == category.CategoryId);
+            questCategoriesId.Add(categoryDetail.First().CategoryId);
+        }
+        
+        return questCategoriesId;
     }
     
     public async Task JoinQuest(string questId, string userId) {

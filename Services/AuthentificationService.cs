@@ -17,7 +17,11 @@ public class AuthentificationService {
 
     public string GenerateJwtToken(User user) {
         var secretKey = _config["JwtSettings:Secret"];
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        
+        if (string.IsNullOrEmpty(secretKey))
+            Console.WriteLine("secret key not defined in config");
+        
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? throw new InvalidOperationException()));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         
         var claims = new[] {

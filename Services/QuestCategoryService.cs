@@ -5,9 +5,11 @@ namespace VoisinUp.Services;
 
 public class QuestCategoryService {
     private readonly QuestCategoryRepository _questCategoryRepository;
+    private readonly QuestRepository _questRepository;
 
-    public QuestCategoryService(QuestCategoryRepository questCategoryRepository) {
+    public QuestCategoryService(QuestCategoryRepository questCategoryRepository, QuestRepository questRepository) {
         _questCategoryRepository = questCategoryRepository;
+        _questRepository = questRepository;
     }
 
     public async Task AddQuestCategories(string questId, int[] questCategoriesId) {
@@ -24,7 +26,7 @@ public class QuestCategoryService {
     }
 
     public async Task<List<int>> GetQuestCategories(string questId) {
-        var questCategories = await _questCategoryRepository.GetQuestCategoriesId(questId);
+        var questCategories = await _questRepository.GetQuestCategoriesId(questId);
         return questCategories;
     }
 }

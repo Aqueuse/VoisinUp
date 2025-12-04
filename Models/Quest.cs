@@ -38,17 +38,17 @@ public class QuestDetails {
     public DateTime DateCreated { get; set; }
     public DateTime DateStarted { get; set; }
 
-    public List<int> Categories { get; set; }
-    public List<UserCard> Participants { get; set; }
+    public required List<int> Categories { get; set; }
+    public required List<UserCard> Participants { get; set; }
 }
 
 public class QuestComment
 {
     public string CommentId { get; set; } = Guid.NewGuid().ToString();
-    public string QuestId { get; set; }
-    public string UserId { get; set; }
+    public required string QuestId { get; set; }
+    public required string UserId { get; set; }
 
-    public string Content { get; set; }
+    public required string Content { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public string? UserName { get; set; } // pratique pour afficher directement
