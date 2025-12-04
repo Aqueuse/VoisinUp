@@ -62,7 +62,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 }
 
                 return Task.CompletedTask;
-            }
+            },
+            OnAuthenticationFailed = ctx => {
+                Console.WriteLine("[AUTH FAILED] " + ctx.Exception.Message);
+                return Task.CompletedTask;
+            },
         };
     });
 
