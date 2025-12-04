@@ -25,3 +25,7 @@ services:
       - ./DB_creation.sql:/docker-entrypoint-initdb.d/DB_creation.sql:ro
     # ⚠️  pas de volume persistant : on veut tout perdre à chaque rebuild
     # pas de `db_data:` ici !
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      echo 'list-users() { psql -U postgres -d voisinup -c "SELECT \\"UserId\\", \\"Name\\", \\"Email\\" FROM \\"User\\";"; }' >> /root/.bashrc
+      exec docker-entrypoint.sh postgres

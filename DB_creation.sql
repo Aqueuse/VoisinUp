@@ -32,10 +32,11 @@ CREATE TABLE "VoisinageSuccess" (
 );
 
 CREATE TABLE "UserAssets" (
+  "UserAssetId" VARCHAR(36) PRIMARY KEY,
   "UserId" VARCHAR(36),
   "AssetId" VARCHAR(36),
   "Coordinates" VARCHAR(255) NOT NULL,
-  PRIMARY KEY("UserId","AssetId")
+  "InInventory" BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE "Quest" (
