@@ -57,6 +57,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     context.Token = accessToken;
                 }
 
+                else {
+                    Console.WriteLine("no token or empty");
+                }
+
                 return Task.CompletedTask;
             }
         };
