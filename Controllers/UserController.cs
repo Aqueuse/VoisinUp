@@ -19,6 +19,9 @@ public class UserController : Controller {
     [HttpGet("get-user-profile")]
     public async Task<IActionResult> GetUserProfile() {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        Console.WriteLine("token :"+userIdClaim);
+        
         if (userIdClaim == null) return Unauthorized();
         
         var result = await _userService.GetUserProfileByIdAsync(userIdClaim);
