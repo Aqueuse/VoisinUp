@@ -44,7 +44,12 @@ public class UserRepository {
         await using var _connection = new NpgsqlConnection(_connectionString);
 
         var userQuery = await _connection.QueryAsync<User>(u => u.UserId == userId);
-        var user = userQuery.First();
+        var enumerable = userQuery.ToList();
+        
+        if (!enumerable.Any())
+            return null;
+        
+        var user = enumerable.First();
 
         var userAssets = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId);
 
