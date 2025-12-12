@@ -67,7 +67,7 @@ public class UserController : Controller {
         
         var result = await _userService.BuyAsset(userIdClaim, assetId);
         
-        return StatusCode(result.StatusCode);
+        return Ok(result.Data);
     }
     
     [Authorize]

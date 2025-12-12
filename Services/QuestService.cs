@@ -94,7 +94,7 @@ public class QuestService {
     }
     
     public async Task<ServiceResult> CompleteQuest(string questId, string userId) {
-        // verify if the quest exist
+        // verify if the quest exists
         var quest = await GetQuestByQuestId(questId);
         if (quest == null) return new ServiceResult { StatusCode = 404};
 
@@ -104,7 +104,6 @@ public class QuestService {
         var participants = await _questRepository.GetParticipantsUserIdForQuestAsync(questId); 
         
         foreach (var participant in participants) {
-            // POC : give bricks
             await _userService.GiveBricks(participant, 20);
             
             // V1 : also give asset (Todo)
@@ -116,11 +115,11 @@ public class QuestService {
     }
 
     public async Task<ServiceResult> Claim(string questId, string userId) {
-        // check if the quest exist
+        // check if the quest exists
         var quest = await GetQuestByQuestId(questId);
         if (quest == null) return new ServiceResult { StatusCode = 404};
 
-        // check if the user is participating to the quest
+        // check if the user is participating in the quest
         var isParticipating = await IsUserParticipatingOnQuest(userId, questId);
         if (!isParticipating) return new ServiceResult { StatusCode = 403};
 

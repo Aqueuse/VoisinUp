@@ -73,6 +73,14 @@ public class UserRepository {
 
         return asset.FirstOrDefault();
     }
+
+    public async Task<UserAssets[]?> GetUserAssets(string userId) {
+        await using var _connection = new NpgsqlConnection(_connectionString);
+
+        var userAssets = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId);
+
+        return userAssets.ToArray();
+    }
     
     public async Task BuyAsset(UserAssets userAsset) {
         await using var _connection = new NpgsqlConnection(_connectionString);

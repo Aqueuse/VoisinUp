@@ -130,7 +130,7 @@ public class UserService {
         var user = await _userRepository.GetUserByIdAsync(userId);
         if (user == null) return new ServiceResult { StatusCode = 404};
 
-        UserAssets userAsset = new UserAssets() {
+        var userAsset = new UserAssets() {
             UserId = userId,
             AssetId = assetId,
             Coordinates = "0",
@@ -140,8 +140,10 @@ public class UserService {
         };
 
         await _userRepository.BuyAsset(userAsset);
+
+        var userInventory = await _userRepository.GetUserAssets(userId);
         
-        return new ServiceResult { StatusCode = 200};
+        return new ServiceResult { StatusCode = 200, Data = userInventory};
     }
     
     public async Task<ServiceResult> UpdateAsset(string userId, string userAssetId, string coordinates, string orientation, bool inInventory) {
