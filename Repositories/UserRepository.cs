@@ -74,12 +74,20 @@ public class UserRepository {
         return asset.FirstOrDefault();
     }
 
-    public async Task<UserAssets[]?> GetUserAssets(string userId) {
+    public async Task<UserAssetsInInventory[]?> GetUserAssets(string userId) {
         await using var _connection = new NpgsqlConnection(_connectionString);
 
-        var userAssets = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId);
+        var userAssets = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId && ua.InInventory);
 
-        return userAssets.ToArray();
+        var assetsInInventory = new List<UserAssetsInInventory>();
+
+        var userAssetsEnumerable = userAssets as UserAssets[] ?? userAssets.ToArray();
+        
+        foreach (var userAsset in userAssetsEnumerable) {
+            assetsInInventory.Add(new UserAssetsInInventory() { UserAssetId = userAsset.UserAssetId, AssetId = userAsset.AssetId});
+        }
+        
+        return assetsInInventory.ToArray();
     }
     
     public async Task BuyAsset(UserAssets userAsset) {

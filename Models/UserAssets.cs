@@ -15,3 +15,8 @@ public class UpdateAsset {
     public required string Orientation { get; set; } // quaternion
     public required bool InInventory { get; set; }
 }
+
+public class UserAssetsInInventory {
+    public required string UserAssetId { get; set; }
+    public required string AssetId { get; set; }
+}
