@@ -56,22 +56,18 @@ public class UserService {
         return null;
     }
     
-    // 🔹 Crée un utilisateur et sa grille 100x100x5
     public async Task<ServiceResult> CreateUserAsync(CreateUser createUser) {
-        // check if voisinage exist
         var voisinage = await _voisinageRepository.GetVoisinageByIdAsync(createUser.VoisinageId);
         if (voisinage == null) {
             return new ServiceResult { StatusCode = 404};
         }
 
-        // check if user with email don't already exist, if so, return a specific message to redirect user (vuejs)
         var user = await _userRepository.GetUserByEmailAsync(createUser.Email);
 
         if (user != null) {
             return new ServiceResult { StatusCode = 409};
         }
 
-        // Hash du mot de passe avant stockage
         string hashedPassword = _authentificationService.GetHashedPassword(createUser.PasswordHash);
 
         var userToCreate = new User {
@@ -119,12 +115,48 @@ public class UserService {
         return new ServiceResult { StatusCode = 200};
     }
 
-    public async Task GiveBricks(string userId, int bricksQuantity) {
+    public async Task<ServiceResult> GiveBricks(string userId, int bricksQuantity) {
         var user = await _userRepository.GetUserByIdAsync(userId);
-        if (user == null) return;
+        if (user == null) return new ServiceResult { StatusCode = 404};
 
         user.BricksQuantity += bricksQuantity;
         
         await _userRepository.EditUserAsync(user);
+        
+        return new ServiceResult { StatusCode = 200};
+    }
+
+    public async Task<ServiceResult> BuyAsset(string userId, string assetId) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null) return new ServiceResult { StatusCode = 404};
+
+        UserAssets userAsset = new UserAssets() {
+            UserId = userId,
+            AssetId = assetId,
+            Coordinates = "0",
+            InInventory = true,
+            Orientation = "0",
+            UserAssetId = "assetId-" + Guid.NewGuid()
+        };
+
+        await _userRepository.BuyAsset(userAsset);
+        
+        return new ServiceResult { StatusCode = 200};
+    }
+    
+    public async Task<ServiceResult> UpdateAsset(string userId, string userAssetId, string coordinates, string orientation, bool inInventory) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null) return new ServiceResult { StatusCode = 404};
+
+        var asset = await _userRepository.GetAsset(userId, userAssetId);
+        if (asset == null) return new ServiceResult { StatusCode = 404};
+
+        asset.Coordinates = coordinates;
+        asset.Orientation = orientation;
+        asset.InInventory = inInventory;
+
+        await _userRepository.UpdateAsset(asset);
+        
+        return new ServiceResult { StatusCode = 200};
     }
 }

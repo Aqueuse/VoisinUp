@@ -58,4 +58,26 @@ public class UserController : Controller {
         
         return StatusCode(result.StatusCode);
     }
+
+    [Authorize]
+    [HttpPost("buy-asset")]
+    public async Task<IActionResult> BuyAsset([FromBody] string assetId) {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+        
+        var result = await _userService.BuyAsset(userIdClaim, assetId);
+        
+        return StatusCode(result.StatusCode);
+    }
+    
+    [Authorize]
+    [HttpPost("update-asset")]
+    public async Task<IActionResult> UpdateAsset([FromBody] UpdateAsset updateAsset) {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+
+        var result = await _userService.UpdateAsset(userIdClaim, updateAsset.UserAssetId, updateAsset.Coordinates, updateAsset.Orientation, updateAsset.InInventory);
+        
+        return StatusCode(result.StatusCode);
+    }
 }

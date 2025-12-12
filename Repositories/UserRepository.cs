@@ -65,4 +65,28 @@ public class UserRepository {
 
         return user.FirstOrDefault();
     }
+
+    public async Task<UserAssets?> GetAsset(string userId, string userAssetId) {
+        await using var _connection = new NpgsqlConnection(_connectionString);
+
+        var asset = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId && ua.UserAssetId == userAssetId);
+
+        return asset.FirstOrDefault();
+    }
+    
+    public async Task BuyAsset(UserAssets userAsset) {
+        await using var _connection = new NpgsqlConnection(_connectionString);
+        
+        await _connection.InsertAsync(userAsset);
+        
+        Console.WriteLine("[Success] userAsset successfully buyed. UserAssetId is"+userAsset.UserAssetId);
+    }
+    
+    public async Task UpdateAsset(UserAssets userAsset) {
+        await using var _connection = new NpgsqlConnection(_connectionString);
+
+        await _connection.UpdateAsync(userAsset);
+
+        Console.WriteLine("[Success] userAsset successfully updated. UserAssetId is"+userAsset.UserAssetId);
+    }
 }

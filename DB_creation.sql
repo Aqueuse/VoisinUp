@@ -36,6 +36,7 @@ CREATE TABLE "UserAssets" (
   "UserId" VARCHAR(36),
   "AssetId" VARCHAR(36),
   "Coordinates" VARCHAR(255) NOT NULL,
+  "Orientation" VARCHAR(255) NOT NULL,
   "InInventory" BOOLEAN DEFAULT TRUE
 );
 
