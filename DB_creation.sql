@@ -8,7 +8,7 @@ CREATE TABLE "User" (
   "Country" VARCHAR(100) NOT NULL,
   "AvatarUrl" VARCHAR(255),
   "Bio" TEXT,
-  "BricksQuantity" INT DEFAULT 0,
+  "BricksQuantity" INT DEFAULT 50,
   "CakesQuantity" INT DEFAULT 0,
   "Email" VARCHAR(255) UNIQUE NOT NULL,
   "PasswordHash" TEXT NOT NULL,

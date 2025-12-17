@@ -79,7 +79,8 @@ public class UserService {
             Commune = "",
             VoisinageId = createUser.VoisinageId,
             Bio = "",
-            AvatarUrl = ""
+            AvatarUrl = "",
+            BricksQuantity = 50
         };
         
         await _userRepository.CreateUserAsync(userToCreate);
