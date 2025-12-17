@@ -131,6 +131,8 @@ builder.Services.AddScoped<QuestCategoryService>();
 
 builder.Services.AddScoped<AuthentificationService>();
 
+builder.Services.AddScoped<JsonCdnService>();
+
 var app = builder.Build();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", false);

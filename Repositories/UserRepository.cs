@@ -44,15 +44,10 @@ public class UserRepository {
         await using var _connection = new NpgsqlConnection(_connectionString);
 
         var userQuery = await _connection.QueryAsync<User>(u => u.UserId == userId);
-        var enumerable = userQuery.ToList();
-        
-        if (!enumerable.Any())
-            return null;
-        
-        var user = enumerable.First();
+        var user = userQuery.First();
+        if (user == null) return null;
 
         var userAssets = await _connection.QueryAsync<UserAssets>(ua => ua.UserId == userId);
-
         user.UserAssets = userAssets.ToList();
         
         return user;
@@ -104,5 +99,17 @@ public class UserRepository {
         await _connection.UpdateAsync(userAsset);
 
         Console.WriteLine("[Success] userAsset successfully updated. UserAssetId is"+userAsset.UserAssetId);
+    }
+    
+    public async Task RemoveUserBrickQuantity(string userId, int bricksQuantity) {
+        await using var _connection = new NpgsqlConnection(_connectionString);
+
+        var user = await GetUserByIdAsync(userId);
+        if (user == null) return;
+
+        if (user.BricksQuantity < bricksQuantity) return;
+
+        user.BricksQuantity -= bricksQuantity;
+        await _connection.UpdateAsync(user);
     }
 }

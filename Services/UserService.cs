@@ -7,12 +7,14 @@ public class UserService {
     private readonly UserRepository _userRepository;
     private readonly VoisinageRepository _voisinageRepository;
     private readonly AuthentificationService _authentificationService;
+    private readonly JsonCdnService _jsonCdnService;
 
-    public UserService(UserRepository userRepository, AuthentificationService authentificationService, VoisinageRepository voisinageRepository) {
+    public UserService(UserRepository userRepository, AuthentificationService authentificationService, VoisinageRepository voisinageRepository, JsonCdnService jsonCdnService) {
         _userRepository = userRepository;
         _voisinageRepository = voisinageRepository;
         
         _authentificationService = authentificationService;
+        _jsonCdnService = jsonCdnService;
     }
     
     public async Task<User?> GetUserByIdAsync(string userId) {
@@ -139,9 +141,19 @@ public class UserService {
             Orientation = "0",
             UserAssetId = "assetId-" + Guid.NewGuid()
         };
+        
+        var assetCatalog = await _jsonCdnService.TryGetJsonCatalog();
+        if (assetCatalog == null) return new ServiceResult { StatusCode = 404};
 
+        var assetInCatalog = assetCatalog.FirstOrDefault(ua => ua.assetId == assetId);
+        if (assetInCatalog == null) return new ServiceResult { StatusCode = 404};
+
+        if (assetInCatalog.assetCost > user.BricksQuantity)
+            return new ServiceResult() { StatusCode = 403 }; // pas assez de monnaie (mais innaccessible normalement car on vérifie en front, hello cheater)
+        
         await _userRepository.BuyAsset(userAsset);
-
+        await _userRepository.RemoveUserBrickQuantity(userId, assetInCatalog.assetCost);
+        
         var userInventory = await _userRepository.GetUserAssets(userId);
         
         return new ServiceResult { StatusCode = 200, Data = userInventory};
