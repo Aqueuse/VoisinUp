@@ -129,6 +129,17 @@ public class UserService {
         return new ServiceResult { StatusCode = 200};
     }
 
+    public async Task<ServiceResult> GetInventory(string userId) {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null) return new ServiceResult { StatusCode = 404};
+
+        var inventory = await _userRepository.GetUserAssets(userId);
+        if (inventory == null)
+            return new ServiceResult { StatusCode = 404};    
+        
+        return new ServiceResult { StatusCode = 200, Data = inventory };
+    }
+
     public async Task<ServiceResult> BuyAsset(string userId, string assetId) {
         var user = await _userRepository.GetUserByIdAsync(userId);
         if (user == null) return new ServiceResult { StatusCode = 404};

@@ -80,4 +80,17 @@ public class UserController : Controller {
         
         return StatusCode(result.StatusCode);
     }
+    
+    [Authorize]
+    [HttpGet("get-inventory")]
+    public async Task<IActionResult> GetInventory() {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null) return Unauthorized();
+
+        var result = await _userService.GetInventory(userIdClaim);
+        if (result.StatusCode == 404)
+            return NotFound();
+        
+        return Ok(result.Data);
+    }
 }
