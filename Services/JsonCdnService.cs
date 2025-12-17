@@ -3,7 +3,7 @@ using VoisinUp.Models;
 
 namespace VoisinUp.Services;
 
-public class JsonCdnService() {
+public class JsonCdnService {
     private readonly List<AssetData> assetCatalog = [];
     
     public async Task<List<AssetData>?> TryGetJsonCatalog() {
