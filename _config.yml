@@ -1,7 +1,0 @@
-title: VoisinUp
-description: Site en construction
-theme: minima
-markdown: kramdown
-collections:
-  posts:
-    output: true

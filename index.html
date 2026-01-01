@@ -1,27 +1,57 @@
----
-layout: default
-title: "Bienvenue"
----
+<!DOCTYPE html>
+<head>
+<link rel="stylesheet" href="index.css">
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>VoisinUp</h1>
-    <p>L'application ludique qui fait grandir ton quartier.</p>
-    <a class="cta" href="/VoisinUp/nouvelles.html">Découvrir les nouvelles</a>
-  </div>
-</section>
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "YOUR_PUBLIC_KEY",
+      });
+   })();
 
-<section class="features">
-  <div class="feature">
-    <h2>Crée des quêtes</h2>
-    <p>Encourage les bonnes actions, petit geste par petit geste.</p>
+   function SendEmail() {
+    let email = document.getElementById("email").value;
+
+    emailjs.SendEmail("", "", email).then();
+   }
+</script>
+</head>
+
+<body class="lilita-one-regular">
+<h1>VoisinUp</h1>
+<div class="logoContainer">
+  <img class="logo" src="assets/immeuble et maison kawai transparent.png" alt="immeuble et maison kawai">
+</div>
+
+<div class="features">
+  <div class="featureBloc">
+    <p>Participe à des quêtes avec tes voisins</p>
+    <img src="assets/taverne.png" alt="chopes">
   </div>
-  <div class="feature">
-    <h2>Rencontre tes voisins</h2>
-    <p>Des liens simples, positifs, humains.</p>
+  <div class="featureBloc">
+    <p>Construis le voisinage de tes rêves</p>
+    <img src="assets/brique_512.png" alt="brique">
+</div>
+</div>
+<br><br><br>
+<div class="subscribe">
+  <div class="subscribeForm">
+  <p>Sois informé du lancement de l’application</p>
+  <form>
+    <input id="email" type="email" placeholder="email">
+  </form>
+  <button class="subscribeButton" onclick="SendEmail()">
+    Je deviens un bâtisseur
+  </button>
   </div>
-  <div class="feature">
-    <h2>Construis ton village</h2>
-    <p>Tes actions prennent vie dans l’application.</p>
-  </div>
-</section>
+</div>
+<div class="confirmationSubscribe">
+  Email enregistré, nous te tiendrons informé du lancement du jeu
+</div>
+
+<footer><a href="https://ours-agile.com">Ours Agile</a> - 2026</footer>
+</body>
+
