@@ -10,7 +10,7 @@ body {
 }
 
 .logo {
-    width: 40%;
+    width: 30%;
     height: auto;
 }
 
@@ -122,9 +122,17 @@ input {
     text-align: center;
 }
 
-.confirmationSubscribe {
-    display: none;
-    border-radius: 20px;
+:modal {
+  background-color: #ad5050;
+  border-radius: 20px;
+  border-color: transparent;
+  padding: 50px;
+  color: white;
+  box-shadow: 10px 10px 5px #00000038;
+}
+
+.modaleButton {
+    background-color: #fba3a3;
 }
 
 footer {

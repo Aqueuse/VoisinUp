@@ -10,14 +10,24 @@
 <script type="text/javascript">
    (function(){
       emailjs.init({
-        publicKey: "YOUR_PUBLIC_KEY",
+        publicKey: "rLae4lAkeyyICSTiw",
       });
    })();
 
    function SendEmail() {
-    let email = document.getElementById("email").value;
+    let parms = {
+      email: document.getElementById("email").value
+    }
 
-    emailjs.SendEmail("", "", email).then();
+    emailjs.send("service_9z03aki", "template_jwypkk7", parms).then(ShowConfirmationModale());
+   }
+
+   function ShowConfirmationModale() {
+      document.getElementById("confirmationSubscribe").showModal();
+   }
+
+   function HideConfirmationModale() {
+      document.getElementById("confirmationSubscribe").style.display = "none";
    }
 </script>
 </head>
@@ -50,9 +60,13 @@
   </button>
   </div>
 </div>
-<div class="confirmationSubscribe">
+<dialog id="confirmationSubscribe">
   Email enregistré, nous te tiendrons informé du lancement du jeu
-</div>
+  <form>
+  <br>
+  <button class="modaleButton">Fermer</button>
+  </form>
+</dialog>
 
 <footer><a href="https://ours-agile.com">Ours Agile</a> - 2026</footer>
 </body>
